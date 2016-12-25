@@ -4,26 +4,68 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.Button;
+import android.widget.RadioGroup;
+import android.widget.TextView;
 
 import com.coachgecko.tenq.R;
 
 public class QuestionHolderActivity extends AppCompatActivity {
 
     private FragmentTransaction transaction;
+    private int questionNo;
+
+    private TextView questionNoTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_question_holder);
 
-/*        FragmentManager manager = getSupportFragmentManager();
-        transaction = manager.beginTransaction();
-        QuestionFragment qsf = new QuestionFragment();
-        transaction.add(R.id.question,qsf,"Question_Frag");
-        transaction.commit();
-  */
+        questionNo = 1;
+
+        questionNoTextView = (TextView) findViewById(R.id.questionNo) ;
+        if(questionNoTextView!=null) {
+            questionNoTextView.setText("Question No " + questionNo);
+        }
+
         generateQuestion();
 
+        Button nextButton = (Button) findViewById(R.id.btn_next);
+        Button prevButton = (Button) findViewById(R.id.btn_prev);
+
+        nextButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                nextQuestion();
+            }
+        });
+        prevButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                prevQuestion();
+            }
+        });
+
+        RadioGroup radioOptions = (RadioGroup) findViewById(R.id.answersRadio);
+
+        radioOptions.setOnClickListener(new View.OnClickListener(){
+            @Override
+
+        });
+
+    }
+
+    public void prevQuestion(){
+        questionNo-=1;
+        questionNoTextView.setText("Question No "+questionNo);
+    }
+
+    public void nextQuestion() {
+        questionNo+=1;
+        questionNoTextView.setText("Question No "+questionNo);
     }
 
     public void generateQuestion() {

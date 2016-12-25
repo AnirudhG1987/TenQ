@@ -7,10 +7,10 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="0.5"
-        android:text="Question 1"
         android:padding="5dp"
         android:textAlignment="center"
-        android:textSize="30dp"/>
+        android:textSize="30dp"
+        android:id="@+id/questionNo"/>
 
 
     <FrameLayout
@@ -30,17 +30,20 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:text="Back"
+            android:text="prev"
+            android:textAllCaps="true"
+            android:id="@+id/btn_prev"
             android:padding="1dp"
-            android:background="@color/bg_main"
-            android:textAlignment="center"/>
+            android:background="@color/btn_prev"/>
 
         <Button
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:background="@color/bg_login"
-            android:text="Next"/>
+            android:id="@+id/btn_next"
+            android:background="@color/btn_next"
+            android:textAllCaps="true"
+            android:text="next"/>
 
     </LinearLayout>
 
