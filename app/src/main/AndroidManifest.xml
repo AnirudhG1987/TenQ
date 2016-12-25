@@ -8,13 +8,23 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+
+        <activity android:name=".Authentication.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".Authentication.SignupActivity"
+            android:label="SignUp"/>
+        <activity
+            android:name=".Authentication.ResetPasswordActivity"
+            android:label="ResetPassword"/>
+        <activity
+            android:name=".Questions.QuestionHolderActivity"
+            android:label="Question"/>
     </application>
 
 </manifest>
