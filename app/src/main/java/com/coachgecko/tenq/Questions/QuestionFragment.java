@@ -6,7 +6,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.coachgecko.tenq.R;
 
@@ -47,6 +49,17 @@ public class QuestionFragment extends Fragment {
         option2Radio.setText(option2);
         option3Radio.setText(option3);
         option4Radio.setText(option4);
+
+        RadioGroup radioOptions = (RadioGroup) rootview.findViewById(R.id.answersRadio);
+
+        radioOptions.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
+        {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                // checkedId is the RadioButton selected
+                Toast.makeText(getActivity(), "" + checkedId, Toast.LENGTH_SHORT).show();
+            }
+        });
 
         return rootview;
     }

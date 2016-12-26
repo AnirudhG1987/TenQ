@@ -18,6 +18,8 @@
     <color name="btn_login_bg">#eceef1</color>
     <color name="lbl_name">#333333</color>
     <color name="btn_logut_bg">#ff6861</color>
+    <color name="btn_prev">#e83f3f</color>
+    <color name="btn_next">#19db39</color>
     <!-- The app branding color for the app bar -->
 
 </resources>

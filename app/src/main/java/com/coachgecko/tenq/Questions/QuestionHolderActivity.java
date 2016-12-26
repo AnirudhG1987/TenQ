@@ -4,14 +4,30 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.Button;
-import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.coachgecko.tenq.R;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+
+import java.util.ArrayList;
 
 public class QuestionHolderActivity extends AppCompatActivity {
+
+    private RecyclerView mRecyclerView;
+    private LinearLayoutManager mLinearLayoutManager;
+    private ArrayList<QuestionClass> mquestionsList;
+
+    private DatabaseReference mfiredatabaseRef;
+
 
     private FragmentTransaction transaction;
     private int questionNo;
@@ -20,6 +36,61 @@ public class QuestionHolderActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+
+        mquestionsList = new ArrayList<>();
+
+        mfiredatabaseRef = FirebaseDatabase.getInstance().getReference("questions");
+
+        Query latestAttendance = mfiredatabaseRef.orderByChild("studentName");
+        //mfiredatabaseRef.addChildEventListener(new ChildEventListener() {
+        latestAttendance.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                AttendanceClass attendanceClass = dataSnapshot.getValue(AttendanceClass.class);
+                attendanceClass.setKey(dataSnapshot.getKey());
+                mattendanceList.add(attendanceClass);
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                AttendanceClass attendanceClass = dataSnapshot.getValue(AttendanceClass.class);
+                attendanceClass.setKey(dataSnapshot.getKey());
+                int i=0;
+                for(;i<mattendanceList.size();i++){
+                    AttendanceClass a = mattendanceList.get(i);
+                    if(a.getKey() != null && a.getKey().contains(attendanceClass.getKey()))
+                    {
+                        break;
+                    }
+                }
+                mattendanceList.set(i,attendanceClass);
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                AttendanceClass attendanceClass = dataSnapshot.getValue(AttendanceClass.class);
+                attendanceClass.setKey(dataSnapshot.getKey());int i=0;
+                for(;i<mattendanceList.size();i++){
+                    AttendanceClass a = mattendanceList.get(i);
+                    if(a.getKey() != null && a.getKey().contains(attendanceClass.getKey()))
+                    {
+                        break;
+                    }
+                }
+                mattendanceList.remove(i);
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_question_holder);
@@ -47,13 +118,6 @@ public class QuestionHolderActivity extends AppCompatActivity {
             public void onClick(View v) {
                 prevQuestion();
             }
-        });
-
-        RadioGroup radioOptions = (RadioGroup) findViewById(R.id.answersRadio);
-
-        radioOptions.setOnClickListener(new View.OnClickListener(){
-            @Override
-
         });
 
     }
