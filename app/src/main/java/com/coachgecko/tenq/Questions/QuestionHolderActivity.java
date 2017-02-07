@@ -11,20 +11,18 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.coachgecko.tenq.R;
-import com.google.firebase.database.ChildEventListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Random;
 
-public class QuestionHolderActivity extends AppCompatActivity {
+public class QuestionHolderActivity extends AppCompatActivity implements QuestionFragment.OnRadioButtonSelectedListener{
 
     private RecyclerView mRecyclerView;
     private LinearLayoutManager mLinearLayoutManager;
     private ArrayList<QuestionClass> mquestionsList;
+    private ArrayList<String> manswersSelectedList;
 
     private DatabaseReference mfiredatabaseRef;
 
@@ -39,46 +37,48 @@ public class QuestionHolderActivity extends AppCompatActivity {
 
 
         mquestionsList = new ArrayList<>();
-
+        manswersSelectedList = new ArrayList<>();
+        /*
         mfiredatabaseRef = FirebaseDatabase.getInstance().getReference("questions");
 
-        Query latestAttendance = mfiredatabaseRef.orderByChild("studentName");
+        Query latestAttendance = mfiredatabaseRef.limitToFirst(10);
         //mfiredatabaseRef.addChildEventListener(new ChildEventListener() {
         latestAttendance.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                AttendanceClass attendanceClass = dataSnapshot.getValue(AttendanceClass.class);
-                attendanceClass.setKey(dataSnapshot.getKey());
-                mattendanceList.add(attendanceClass);
+                QuestionClass questionClass = dataSnapshot.getValue(QuestionClass.class);
+                questionClass.setKey(dataSnapshot.getKey());
+                mquestionsList.add(questionClass);
             }
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                AttendanceClass attendanceClass = dataSnapshot.getValue(AttendanceClass.class);
-                attendanceClass.setKey(dataSnapshot.getKey());
+                QuestionClass questionClass = dataSnapshot.getValue(QuestionClass.class);
+                questionClass.setKey(dataSnapshot.getKey());
                 int i=0;
-                for(;i<mattendanceList.size();i++){
-                    AttendanceClass a = mattendanceList.get(i);
-                    if(a.getKey() != null && a.getKey().contains(attendanceClass.getKey()))
+                for(;i<mquestionsList.size();i++){
+                    QuestionClass a = mquestionsList.get(i);
+                    if(a.getKey() != null && a.getKey().contains(questionClass.getKey()))
                     {
                         break;
                     }
                 }
-                mattendanceList.set(i,attendanceClass);
+                mquestionsList.set(i,questionClass);
             }
 
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
-                AttendanceClass attendanceClass = dataSnapshot.getValue(AttendanceClass.class);
-                attendanceClass.setKey(dataSnapshot.getKey());int i=0;
-                for(;i<mattendanceList.size();i++){
-                    AttendanceClass a = mattendanceList.get(i);
-                    if(a.getKey() != null && a.getKey().contains(attendanceClass.getKey()))
+                QuestionClass questionClass = dataSnapshot.getValue(QuestionClass.class);
+                questionClass.setKey(dataSnapshot.getKey());
+                int i=0;
+                for(;i<mquestionsList.size();i++){
+                    QuestionClass a = mquestionsList.get(i);
+                    if(a.getKey() != null && a.getKey().contains(questionClass.getKey()))
                     {
                         break;
                     }
                 }
-                mattendanceList.remove(i);
+                mquestionsList.remove(i);
             }
 
             @Override
@@ -92,47 +92,86 @@ public class QuestionHolderActivity extends AppCompatActivity {
             }
         });
 
+*/
+
+        for(int i=0;i<10;i++) {
+            QuestionClass q = new QuestionClass("Math","Fraction",2,"This is question No "+(i+1),
+                    "answer");
+
+            ArrayList<String> options = new ArrayList<>();
+            options.add("answer");
+            options.add("Option 1");
+            options.add("Option 2");
+            options.add("Option 3");
+            q.setOptions(options);
+            Collections.shuffle(q.getOptions());
+
+            mquestionsList.add(q);
+            manswersSelectedList.add("");
+        }
+
+
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_question_holder);
 
         questionNo = 1;
+
+        generateQuestion(mquestionsList.get(0));
 
         questionNoTextView = (TextView) findViewById(R.id.questionNo) ;
         if(questionNoTextView!=null) {
             questionNoTextView.setText("Question No " + questionNo);
         }
 
-        generateQuestion();
-
-        Button nextButton = (Button) findViewById(R.id.btn_next);
-        Button prevButton = (Button) findViewById(R.id.btn_prev);
+        final Button nextButton = (Button) findViewById(R.id.btn_next);
+        final Button prevButton = (Button) findViewById(R.id.btn_prev);
 
         nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                nextQuestion();
+                if(questionNo < mquestionsList.size()) {
+                    questionNo += 1;
+                    questionNoTextView.setText("Question No "+questionNo);
+                    generateQuestion(mquestionsList.get(questionNo-1));
+                    if(questionNo == mquestionsList.size()) {
+                        nextButton.setText("Submit");
+                    }
+                }
+                else{
+                    checkSolution();
+                }
             }
         });
         prevButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                prevQuestion();
+
+                if(questionNo > 1) {
+                    questionNo -= 1;
+                    questionNoTextView.setText("Question No "+questionNo);
+                    generateQuestion(mquestionsList.get(questionNo-1));
+                    if(questionNo == mquestionsList.size()-1) {
+                        nextButton.setText("Next");
+                    }
+                }
             }
         });
 
     }
 
-    public void prevQuestion(){
-        questionNo-=1;
-        questionNoTextView.setText("Question No "+questionNo);
+    public void checkSolution() {
+        int noofQuestionsCorrect = 0, noofQuestionsAttempted = 0;
+        for(int i=0;i<mquestionsList.size(); i++) {
+            if (!mquestionsList.get(i).getAnswerText().isEmpty()) {
+                if (mquestionsList.get(i).getAnswerText().equals(manswersSelectedList.get(i))) {
+                    noofQuestionsCorrect += 1;
+                }
+            }
+        }
     }
 
-    public void nextQuestion() {
-        questionNo+=1;
-        questionNoTextView.setText("Question No "+questionNo);
-    }
-
-    public void generateQuestion() {
+    public void generateQuestion(QuestionClass question) {
 
 
         Fragment f = getSupportFragmentManager().findFragmentById(R.id.question);
@@ -142,17 +181,29 @@ public class QuestionHolderActivity extends AppCompatActivity {
         }
 
         QuestionFragment qsf = new QuestionFragment();
-        Bundle b = new Bundle();
-        b.putString("question","something");
-        b.putString("option1","jupiter");
-        b.putString("option2","mars");
-        b.putString("option3","mercury");
-        b.putString("option4","saturn");
 
+        Bundle b = new Bundle();
+        b.putString("question",question.getQuestionText());
+        // shuffle the questions and use the question no as the seed.
+        Random rnd = new Random(questionNo);
+        String answer = manswersSelectedList.get(questionNo-1);
+        int indexofAns;
+        if(!answer.isEmpty()) {
+            indexofAns = question.getOptions().indexOf(answer);
+        }
+        else{
+            indexofAns = -1;
+        }
+        b.putStringArrayList("options", question.getOptions());
+        b.putInt("index", indexofAns);
         qsf.setArguments(b);
 
         getSupportFragmentManager().beginTransaction().replace(R.id.question, qsf).commit();
 
     }
 
+    @Override
+    public void onAnswerClicked(String answer) {
+        manswersSelectedList.set(questionNo -1, answer);
+    }
 }

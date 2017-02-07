@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import com.coachgecko.tenq.Questions.QuestionHolderActivity;
 import com.coachgecko.tenq.R;
+import com.coachgecko.tenq.WelcomeScreenActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -36,7 +37,7 @@ public class LoginActivity extends AppCompatActivity {
         auth = FirebaseAuth.getInstance();
 
         if (auth.getCurrentUser() != null) {
-            startActivity(new Intent(LoginActivity.this, QuestionHolderActivity.class));
+            startActivity(new Intent(LoginActivity.this, WelcomeScreenActivity.class));
             finish();
         }
 

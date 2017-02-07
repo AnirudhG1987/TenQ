@@ -8,7 +8,6 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
         <activity android:name=".Authentication.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -18,13 +17,15 @@
         </activity>
         <activity
             android:name=".Authentication.SignupActivity"
-            android:label="SignUp"/>
+            android:label="SignUp" />
         <activity
             android:name=".Authentication.ResetPasswordActivity"
-            android:label="ResetPassword"/>
+            android:label="ResetPassword" />
         <activity
             android:name=".Questions.QuestionHolderActivity"
-            android:label="Question"/>
+            android:label="Question" />
+        <activity android:name=".WelcomeScreenActivity" />
+        <activity android:name=".Topics.TopicsActivity"></activity>
     </application>
 
 </manifest>

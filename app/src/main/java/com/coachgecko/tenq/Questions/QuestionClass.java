@@ -1,5 +1,7 @@
 package com.coachgecko.tenq.Questions;
 
+import java.util.ArrayList;
+
 /**
  * Created by Anirudh on 12/24/2016.
  */
@@ -10,23 +12,32 @@ public class QuestionClass {
     private String subject, topic;
     private int difficulty;
     private String questionText, answerText;
-    private String option1Text, option2Text, option3Text, option4Text;
+    private ArrayList<String> options;
 
     public QuestionClass(){}
 
-    public QuestionClass(String subject, String topic, int difficulty, String questionText, String answerText, String option1Text, String option2Text,
-                          String option3Text, String option4Text){
+    public QuestionClass(String subject, String topic, int difficulty, String questionText, String answerText){
 
         this.subject = subject;
         this.topic = topic;
         this.difficulty = difficulty;
         this.questionText = questionText;
         this.answerText = answerText;
-        this.option1Text = option1Text;
-        this.option2Text = option2Text;
-        this.option3Text = option3Text;
-        this.option4Text = option4Text;
     }
+
+    public QuestionClass(String subject, String topic, int difficulty,
+                         String questionText, String answerText, ArrayList<String> options){
+
+        this.subject = subject;
+        this.topic = topic;
+        this.difficulty = difficulty;
+        this.questionText = questionText;
+        this.answerText = answerText;
+        this.options = options;
+
+    }
+
+    public void setOptions(ArrayList<String> options){ this.options = options; }
 
     public String getSubject(){
         return subject;
@@ -44,19 +55,7 @@ public class QuestionClass {
     public String getAnswerText(){
         return answerText;
     }
-    public String getOption1Text(){
-        return option1Text;
-    }
-    public String getOption2Text(){
-        return option2Text;
-    }
-    public String getOption3Text(){
-        return option3Text;
-    }
-    public String getOption4Text(){
-        return option4Text;
-    }
-
+    public ArrayList<String> getOptions() {return options; }
     public String getKey(){
         return key;
     }
