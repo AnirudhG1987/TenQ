@@ -80,7 +80,8 @@ public class QuestionHolderActivity extends AppCompatActivity implements Questio
                         nextButton.setText("Submit");
                     }
                 } else {
-                    recheckSubmit();
+                    //recheckSubmit();
+                    checkSolution();
                 }
             }
         });
