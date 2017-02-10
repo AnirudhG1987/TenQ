@@ -12,8 +12,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.coachgecko.tenq.DividerItemDecoration;
-import com.coachgecko.tenq.Questions.QuestionHolderActivity;
 import com.coachgecko.tenq.R;
+import com.coachgecko.tenq.Worksheets.WorksheetsActivity;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -24,22 +24,29 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
+import butterknife.ButterKnife;
+
+import static com.coachgecko.tenq.R.id.topic;
+
 public class TopicsActivity extends AppCompatActivity {
 
 
     private RecyclerView mRecyclerView;
     private LinearLayoutManager mLinearLayoutManager;
-    private ArrayList<TopicClass> mtopicsList;
+    private ArrayList<Topic> mtopicsList;
 
-    private FirebaseRecyclerAdapter<TopicClass, TopicHolder> adapter;
+    private FirebaseRecyclerAdapter<Topic, TopicHolder> adapter;
 
     private DatabaseReference mfiredatabaseRef;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_itemview);
+        setContentView(R.layout.activity_recyclerview);
+        ButterKnife.inject(this);
 
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerList);
         mRecyclerView.addItemDecoration(new DividerItemDecoration(
@@ -49,25 +56,50 @@ public class TopicsActivity extends AppCompatActivity {
         mLinearLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLinearLayoutManager);
 
-        mfiredatabaseRef = FirebaseDatabase.getInstance().getReference("Grades");
-
-
+        mfiredatabaseRef = FirebaseDatabase.getInstance().getReference("courses").child("math")
+                .child("MA06").child("topics");
 
         setupTopics();
     }
 
     private void setupTopics() {
-
-        Query query = mfiredatabaseRef;
+        mtopicsList = new ArrayList<>();
+        // mtopicsList.add(Topic.builder().topicName("Arbit").build());
+        Query query = mfiredatabaseRef.orderByValue().equalTo(true);
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                mtopicsList = new ArrayList<>();
 
                 for (DataSnapshot data : dataSnapshot.getChildren()) {
-                    TopicClass topicClass = data.getValue(TopicClass.class);
-                    topicClass.setKey(data.getKey());
-                    mtopicsList.add(topicClass);
+                    final String topicKey = data.getKey();
+                    Topic topic = Topic.builder().topicName(topicKey).build();
+                    topic.setKey(topicKey);
+                    mtopicsList.add(topic);
+                  /*  Query topicNameQuery = FirebaseDatabase.getInstance().getReference("topics").child(topicKey).child("topicName");
+                    System.out.println("topic name is "+topicNameQuery.toString());
+                    topicNameQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            System.out.println("CHECK THIS "+ dataSnapshot.toString());
+                         //   for (DataSnapshot data : dataSnapshot.getChildren()) {
+                         //       if(data.getKey()=="topicName") {
+                                    String topicName = dataSnapshot.getValue(String.class);
+                                    System.out.println("HEY TOPIC "+ topicName+" key "+topicKey);
+                                    Topic topic = Topic.builder().topicName(topicName).build();
+                                    topic.setKey(topicKey);
+                                    mtopicsList.add(topic);
+
+                            //    }
+                           // }
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+
+                    */
                 }
            }
 
@@ -80,8 +112,8 @@ public class TopicsActivity extends AppCompatActivity {
 
     private void attachRecyclerViewAdapter() {
 
-        adapter = new FirebaseRecyclerAdapter<TopicClass, TopicHolder>(
-                TopicClass.class, R.layout.activity_topics, TopicHolder.class, mfiredatabaseRef) {
+        adapter = new FirebaseRecyclerAdapter<Topic, TopicHolder>(
+                Topic.class, R.layout.activity_topics, TopicHolder.class, mfiredatabaseRef) {
 
             @Override
             public TopicHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -92,20 +124,25 @@ public class TopicsActivity extends AppCompatActivity {
             }
 
             @Override
-            protected void populateViewHolder(TopicHolder v, TopicClass model, int position) {
+            protected void populateViewHolder(TopicHolder v, Topic model, int position) {
+
                 v.topicName.setText(model.getTopicName());
             }
 
             @Override
             public void onBindViewHolder(TopicHolder holder, int position) {
-                TopicClass itemTopic = mtopicsList.get(position);
-                holder.bindTopic(itemTopic);
+                if (mtopicsList != null) {
+                    Topic itemTopic = mtopicsList.get(position);
+                    holder.bindTopic(itemTopic);
+                }
             }
 
-            /*@Override
+            @Override
             public int getItemCount() {
+                //if(mtopicsList!=null) {
                 return mtopicsList.size();
-            }*/
+
+            }
 
         };
         mRecyclerView.setAdapter(adapter);
@@ -133,16 +170,16 @@ public class TopicsActivity extends AppCompatActivity {
         //2
 
         public TextView topicName;
-        private TopicClass mtopic;
+        private Topic mtopic;
 
         public TopicHolder(View v) {
             super(v);
 
-            topicName = (TextView) v.findViewById(R.id.topic);
+            topicName = (TextView) v.findViewById(topic);
             v.setOnClickListener(this);
         }
 
-        public void bindTopic(TopicClass topic) {
+        public void bindTopic(Topic topic) {
 
             mtopic = topic;
             topicName.setText(mtopic.getTopicName());
@@ -153,7 +190,8 @@ public class TopicsActivity extends AppCompatActivity {
         public void onClick(View v) {
             Context context = itemView.getContext();
 
-            Intent intent = new Intent(context, QuestionHolderActivity.class);
+            Intent intent = new Intent(context, WorksheetsActivity.class);
+            intent.putExtra("topicKey", mtopic.getKey());
             context.startActivity(intent);
         }
     }

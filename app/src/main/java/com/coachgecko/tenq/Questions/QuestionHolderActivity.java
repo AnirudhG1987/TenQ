@@ -1,126 +1,68 @@
 package com.coachgecko.tenq.Questions;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
 import com.coachgecko.tenq.R;
+import com.coachgecko.tenq.Results.WorksheetResult;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
 
-public class QuestionHolderActivity extends AppCompatActivity implements QuestionFragment.OnRadioButtonSelectedListener{
+import static android.R.attr.key;
 
-    private RecyclerView mRecyclerView;
-    private LinearLayoutManager mLinearLayoutManager;
-    private ArrayList<QuestionClass> mquestionsList;
+public class QuestionHolderActivity extends AppCompatActivity implements QuestionFragment.OnRadioButtonSelectedListener {
+
+    int noOfQuestionsCorrect;
+    int noOfQuestionsAttempted;
+    int noOfQuestions;
+    private ArrayList<Question> mquestionsList;
     private ArrayList<String> manswersSelectedList;
-
+    private ArrayList<Boolean> manswersResultList;
     private DatabaseReference mfiredatabaseRef;
-
-
-    private FragmentTransaction transaction;
     private int questionNo;
+    private String worksheetID;
 
     private TextView questionNoTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-
+        noOfQuestions = 0;
+        questionNo = 1;
         mquestionsList = new ArrayList<>();
         manswersSelectedList = new ArrayList<>();
-        /*
-        mfiredatabaseRef = FirebaseDatabase.getInstance().getReference("questions");
 
-        Query latestAttendance = mfiredatabaseRef.limitToFirst(10);
-        //mfiredatabaseRef.addChildEventListener(new ChildEventListener() {
-        latestAttendance.addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                QuestionClass questionClass = dataSnapshot.getValue(QuestionClass.class);
-                questionClass.setKey(dataSnapshot.getKey());
-                mquestionsList.add(questionClass);
-            }
 
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                QuestionClass questionClass = dataSnapshot.getValue(QuestionClass.class);
-                questionClass.setKey(dataSnapshot.getKey());
-                int i=0;
-                for(;i<mquestionsList.size();i++){
-                    QuestionClass a = mquestionsList.get(i);
-                    if(a.getKey() != null && a.getKey().contains(questionClass.getKey()))
-                    {
-                        break;
-                    }
-                }
-                mquestionsList.set(i,questionClass);
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-                QuestionClass questionClass = dataSnapshot.getValue(QuestionClass.class);
-                questionClass.setKey(dataSnapshot.getKey());
-                int i=0;
-                for(;i<mquestionsList.size();i++){
-                    QuestionClass a = mquestionsList.get(i);
-                    if(a.getKey() != null && a.getKey().contains(questionClass.getKey()))
-                    {
-                        break;
-                    }
-                }
-                mquestionsList.remove(i);
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-*/
-
-        for(int i=0;i<10;i++) {
-            QuestionClass q = new QuestionClass("Math","Fraction",2,"This is question No "+(i+1),
-                    "answer");
-
-            ArrayList<String> options = new ArrayList<>();
-            options.add("answer");
-            options.add("Option 1");
-            options.add("Option 2");
-            options.add("Option 3");
-            q.setOptions(options);
-            Collections.shuffle(q.getOptions());
-
-            mquestionsList.add(q);
-            manswersSelectedList.add("");
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            worksheetID = extras.getString("worksheetID");
         }
 
 
+        mfiredatabaseRef = FirebaseDatabase.getInstance().getReference("worksheets").child(worksheetID).child("questions");
+
+        setupQuestions();
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_question_holder);
 
-        questionNo = 1;
 
-        generateQuestion(mquestionsList.get(0));
-
-        questionNoTextView = (TextView) findViewById(R.id.questionNo) ;
-        if(questionNoTextView!=null) {
+        questionNoTextView = (TextView) findViewById(R.id.questionNo);
+        if (questionNoTextView != null) {
             questionNoTextView.setText("Question No " + questionNo);
         }
 
@@ -130,16 +72,15 @@ public class QuestionHolderActivity extends AppCompatActivity implements Questio
         nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(questionNo < mquestionsList.size()) {
+                if (questionNo < mquestionsList.size()) {
                     questionNo += 1;
-                    questionNoTextView.setText("Question No "+questionNo);
-                    generateQuestion(mquestionsList.get(questionNo-1));
-                    if(questionNo == mquestionsList.size()) {
+                    questionNoTextView.setText("Question No " + questionNo);
+                    populateQuestion(mquestionsList.get(questionNo - 1));
+                    if (questionNo == mquestionsList.size()) {
                         nextButton.setText("Submit");
                     }
-                }
-                else{
-                    checkSolution();
+                } else {
+                    recheckSubmit();
                 }
             }
         });
@@ -147,11 +88,11 @@ public class QuestionHolderActivity extends AppCompatActivity implements Questio
             @Override
             public void onClick(View v) {
 
-                if(questionNo > 1) {
+                if (questionNo > 1) {
                     questionNo -= 1;
-                    questionNoTextView.setText("Question No "+questionNo);
-                    generateQuestion(mquestionsList.get(questionNo-1));
-                    if(questionNo == mquestionsList.size()-1) {
+                    questionNoTextView.setText("Question No " + questionNo);
+                    populateQuestion(mquestionsList.get(questionNo - 1));
+                    if (questionNo == mquestionsList.size() - 1) {
                         nextButton.setText("Next");
                     }
                 }
@@ -160,18 +101,103 @@ public class QuestionHolderActivity extends AppCompatActivity implements Questio
 
     }
 
-    public void checkSolution() {
-        int noofQuestionsCorrect = 0, noofQuestionsAttempted = 0;
-        for(int i=0;i<mquestionsList.size(); i++) {
-            if (!mquestionsList.get(i).getAnswerText().isEmpty()) {
-                if (mquestionsList.get(i).getAnswerText().equals(manswersSelectedList.get(i))) {
-                    noofQuestionsCorrect += 1;
-                }
-            }
-        }
+    public void recheckSubmit() {
+
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getApplicationContext());
+
+        // set title
+        alertDialogBuilder.setTitle("Submit Worksheet");
+
+        // set dialog message
+        alertDialogBuilder
+                .setMessage("Click Yes to Submit!")
+                .setCancelable(false)
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        checkSolution();
+                    }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // if this button is clicked, just close
+                        // the dialog box and do nothing
+                        dialog.cancel();
+                    }
+                });
+
+        // create alert dialog
+        AlertDialog alertDialog = alertDialogBuilder.create();
+
+        // show it
+        alertDialog.show();
     }
 
-    public void generateQuestion(QuestionClass question) {
+
+    public void setupQuestions() {
+
+        mquestionsList = new ArrayList<>();
+
+        Query query = mfiredatabaseRef;
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+
+                for (DataSnapshot data : dataSnapshot.getChildren()) {
+                    //figure out how to get this info from worksheets
+                    System.out.println("CHECK THIS " + data.toString());
+                    Question q = data.getValue(Question.class);
+                    Collections.shuffle(q.getOptions());
+                    mquestionsList.add(q);
+                    noOfQuestions += 1;
+                    manswersSelectedList.add("");
+                    if (mquestionsList.size() == 1) {
+                        populateQuestion(mquestionsList.get(0));
+                    }
+                    System.out.println("CHECK THIS KEY " + key);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+
+
+    }
+
+    public void checkSolution() {
+
+        manswersResultList = new ArrayList<>();
+        for(int i=0;i<mquestionsList.size(); i++) {
+            if (!mquestionsList.get(i).getAnswer().isEmpty()) {
+                if (mquestionsList.get(i).getAnswer().equals(manswersSelectedList.get(i))) {
+                    noOfQuestionsCorrect += 1;
+                    manswersResultList.add(true);
+                } else {
+                    manswersResultList.add(false);
+                }
+            } else {
+                noOfQuestionsAttempted -= 1;
+            }
+        }
+
+        populateFirebaseResult();
+
+    }
+
+    public void populateFirebaseResult() {
+        WorksheetResult result = WorksheetResult.builder().manswersResultList(manswersResultList)
+                .worksheetID(worksheetID).studentID("id1").manswersSelectedList(manswersSelectedList)
+                .noofCorrectQuestions(noOfQuestionsCorrect).noofQuestions(mquestionsList.size())
+                .noOfQuestionsAttempted(noOfQuestionsAttempted).build();
+        DatabaseReference resultFirebaseRef = FirebaseDatabase.getInstance()
+                .getReference("finishedworksheets").child("id1").child(worksheetID);
+
+        resultFirebaseRef.setValue(result);
+    }
+
+    public void populateQuestion(Question question) {
 
 
         Fragment f = getSupportFragmentManager().findFragmentById(R.id.question);
@@ -183,7 +209,7 @@ public class QuestionHolderActivity extends AppCompatActivity implements Questio
         QuestionFragment qsf = new QuestionFragment();
 
         Bundle b = new Bundle();
-        b.putString("question",question.getQuestionText());
+        b.putString("question", question.getQuestion());
         // shuffle the questions and use the question no as the seed.
         Random rnd = new Random(questionNo);
         String answer = manswersSelectedList.get(questionNo-1);

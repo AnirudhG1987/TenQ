@@ -25,7 +25,9 @@
             android:name=".Questions.QuestionHolderActivity"
             android:label="Question" />
         <activity android:name=".WelcomeScreenActivity" />
-        <activity android:name=".Topics.TopicsActivity"></activity>
+        <activity android:name=".Topics.TopicsActivity" />
+        <activity android:name=".Registration.RegistrationActivity" />
+        <activity android:name=".Worksheets.WorksheetsActivity"></activity>
     </application>
 
 </manifest>
