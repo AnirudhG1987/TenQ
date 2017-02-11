@@ -7,6 +7,15 @@ import lombok.experimental.Builder;
  * Created by Anirudh on 2/9/2017.
  */
 
+/*
+
+Holds Meta data of Worksheet.
+
+When pulled from Worksheets 
+
+
+*/
+
 
 @Data
 public class Worksheet {
