@@ -1,24 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
-
-    <TextView
-        android:id="@+id/result"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="40dp"/>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical">
 
 
     <fragment
 
         android:id="@+id/search_topic_fragment"
+
         android:name="com.coachgecko.tenq.Topics.TopicFragment"
+
         android:layout_width="match_parent"
+
         android:layout_height="wrap_content"
+
         tools:layout="@layout/fragment_topic"/>
 
 
@@ -27,7 +24,11 @@
         android:id="@+id/worksheet_fragment"
 
         class="com.coachgecko.tenq.Worksheets.WorksheetFragment"
+
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+
+        android:layout_height="match_parent"
+
+        />
 
 </LinearLayout>

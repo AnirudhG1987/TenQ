@@ -13,7 +13,7 @@ import android.widget.TextView;
 
 import com.coachgecko.tenq.DividerItemDecoration;
 import com.coachgecko.tenq.R;
-import com.coachgecko.tenq.Worksheets.WorksheetsActivity;
+import com.coachgecko.tenq.Worksheets.WorksheetsDisplayActivity;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -26,7 +26,6 @@ import java.util.ArrayList;
 
 import butterknife.ButterKnife;
 
-import static com.coachgecko.tenq.R.id.topic;
 
 public class TopicsActivity extends AppCompatActivity {
 
@@ -113,12 +112,12 @@ public class TopicsActivity extends AppCompatActivity {
     private void attachRecyclerViewAdapter() {
 
         adapter = new FirebaseRecyclerAdapter<Topic, TopicHolder>(
-                Topic.class, R.layout.activity_topics, TopicHolder.class, mfiredatabaseRef) {
+                Topic.class, R.layout.fragment_topic, TopicHolder.class, mfiredatabaseRef) {
 
             @Override
             public TopicHolder onCreateViewHolder(ViewGroup parent, int viewType) {
                 View itemView = LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.activity_topics, parent, false);
+                        .inflate(R.layout.fragment_topic, parent, false);
 
                 return new TopicHolder(itemView);
             }
@@ -175,7 +174,7 @@ public class TopicsActivity extends AppCompatActivity {
         public TopicHolder(View v) {
             super(v);
 
-            topicName = (TextView) v.findViewById(topic);
+            topicName = (TextView) v.findViewById(R.id.searchTopic);
             v.setOnClickListener(this);
         }
 
@@ -190,7 +189,7 @@ public class TopicsActivity extends AppCompatActivity {
         public void onClick(View v) {
             Context context = itemView.getContext();
 
-            Intent intent = new Intent(context, WorksheetsActivity.class);
+            Intent intent = new Intent(context, WorksheetsDisplayActivity.class);
             intent.putExtra("topicKey", mtopic.getKey());
             context.startActivity(intent);
         }

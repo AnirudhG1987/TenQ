@@ -2,12 +2,13 @@ package com.coachgecko.tenq.Results;
 
 import java.util.ArrayList;
 
+import lombok.Data;
 import lombok.experimental.Builder;
 
 /**
  * Created by Anirudh on 2/10/2017.
  */
-
+@Data
 public class WorksheetResult {
 
     private String key;

@@ -27,7 +27,8 @@
         <activity android:name=".WelcomeScreenActivity" />
         <activity android:name=".Topics.TopicsActivity" />
         <activity android:name=".Registration.RegistrationActivity" />
-        <activity android:name=".Worksheets.WorksheetsActivity"></activity>
+        <activity android:name=".Worksheets.WorksheetsDisplayActivity"/>
+        <activity android:name=".Results.ResultsDisplayActivity"></activity>
     </application>
 
 </manifest>

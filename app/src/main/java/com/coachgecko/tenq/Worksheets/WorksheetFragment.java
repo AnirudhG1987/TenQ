@@ -3,7 +3,7 @@ package com.coachgecko.tenq.Worksheets;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -11,7 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.coachgecko.tenq.DividerItemDecoration;
 import com.coachgecko.tenq.Questions.QuestionHolderActivity;
 import com.coachgecko.tenq.R;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
@@ -24,48 +23,59 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
-import butterknife.ButterKnife;
-
 import static com.coachgecko.tenq.R.id.itemdes;
 import static com.coachgecko.tenq.R.id.itemname;
 
-public class WorksheetsActivity extends AppCompatActivity {
+public class WorksheetFragment extends Fragment {
 
     private RecyclerView mRecyclerView;
     private LinearLayoutManager mLinearLayoutManager;
     private ArrayList<Worksheet> mworkSheetList;
 
-    private FirebaseRecyclerAdapter<Worksheet, WorksheetsActivity.WorksheetHolder> adapter;
+    private FirebaseRecyclerAdapter<Worksheet, WorksheetHolder> adapter;
 
     private DatabaseReference mfiredatabaseRef;
 
+    public WorksheetFragment() {
+        // Required empty public constructor
+    }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_recyclerview);
-        ButterKnife.inject(this);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        View rootview = inflater.inflate(R.layout.activity_recyclerview, container, false);
 
         String topicKey = "";
-
-        // Get the Topic Name from TopicsActivity
-        Bundle extras = getIntent().getExtras();
-        if (extras != null) {
-            topicKey = extras.getString("topicKey");
+        if (getArguments() != null) {
+            topicKey = getArguments().getString("topicKey");
         }
 
-        mRecyclerView = (RecyclerView) findViewById(R.id.recyclerList);
-        mRecyclerView.addItemDecoration(new DividerItemDecoration(
-                getApplicationContext()
-        ));
+        mRecyclerView = (RecyclerView) rootview.findViewById(R.id.recyclerList);
 
-        mLinearLayoutManager = new LinearLayoutManager(this);
+        // Figure out why divider decoration item cannot be used .. problem with the getApplicationContext()
+        // calls facebook... 
+
+        // mRecyclerView.addItemDecoration(new DividerItemDecoration(
+        //       getApplicationContext()
+        // ));
+
+        mLinearLayoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(mLinearLayoutManager);
 
         mfiredatabaseRef = FirebaseDatabase.getInstance().getReference("topics").child(topicKey).
                 child("worksheets");
         System.out.println("CHECK THIS " + mfiredatabaseRef.toString());
         setupWorksheets();
+
+        super.onCreate(savedInstanceState);
+
+        if (adapter != null) {
+            adapter.cleanup();
+        }
+        attachRecyclerViewAdapter();
+
+        return rootview;
     }
 
     private void setupWorksheets() {
@@ -74,7 +84,6 @@ public class WorksheetsActivity extends AppCompatActivity {
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-
 
                 for (DataSnapshot data : dataSnapshot.getChildren()) {
                     //figure out how to get this info from worksheets
@@ -94,7 +103,8 @@ public class WorksheetsActivity extends AppCompatActivity {
     private void attachRecyclerViewAdapter() {
 
         adapter = new FirebaseRecyclerAdapter<Worksheet, WorksheetHolder>(
-                Worksheet.class, R.layout.activity_worksheetitem, WorksheetHolder.class, mfiredatabaseRef) {
+                Worksheet.class, R.layout.activity_worksheetitem,
+                WorksheetHolder.class, mfiredatabaseRef) {
 
             @Override
             public WorksheetHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -125,22 +135,12 @@ public class WorksheetsActivity extends AppCompatActivity {
         mRecyclerView.setAdapter(adapter);
     }
 
-
     @Override
-    protected void onStart() {
+    public void onDestroy() {
+        super.onDestroy();
         if (adapter != null) {
             adapter.cleanup();
         }
-        attachRecyclerViewAdapter();
-        super.onStart();
-
-
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        adapter.cleanup();
     }
 
     public static class WorksheetHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -165,7 +165,6 @@ public class WorksheetsActivity extends AppCompatActivity {
             worksheetDescription.setText(mworksheet.getDescription());
         }
 
-
         @Override
         public void onClick(View v) {
             Context context = itemView.getContext();
@@ -176,4 +175,3 @@ public class WorksheetsActivity extends AppCompatActivity {
         }
     }
 }
-

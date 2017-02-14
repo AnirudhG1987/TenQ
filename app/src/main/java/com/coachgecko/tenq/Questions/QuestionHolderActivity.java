@@ -1,6 +1,8 @@
 package com.coachgecko.tenq.Questions;
 
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
@@ -10,6 +12,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.coachgecko.tenq.R;
+import com.coachgecko.tenq.Results.ResultsDisplayActivity;
 import com.coachgecko.tenq.Results.WorksheetResult;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -46,7 +49,6 @@ public class QuestionHolderActivity extends AppCompatActivity implements Questio
         mquestionsList = new ArrayList<>();
         manswersSelectedList = new ArrayList<>();
 
-
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             worksheetID = extras.getString("worksheetID");
@@ -82,6 +84,16 @@ public class QuestionHolderActivity extends AppCompatActivity implements Questio
                 } else {
                     //recheckSubmit();
                     checkSolution();
+
+                    Context context = v.getContext();
+                    Intent intent = new Intent(context, ResultsDisplayActivity.class);
+                    String s = "Questions Answered Correctly: " + noOfQuestionsCorrect;
+                    s = s + "\n" + "Questions Attempted: " + noOfQuestionsAttempted;
+                    s = s + "\n" + "Total Questions: " + noOfQuestions;
+
+                    intent.putExtra("resultDetails", s);
+                    context.startActivity(intent);
+
                 }
             }
         });
@@ -168,10 +180,10 @@ public class QuestionHolderActivity extends AppCompatActivity implements Questio
     }
 
     public void checkSolution() {
-
-        manswersResultList = new ArrayList<>();
+        noOfQuestionsAttempted = noOfQuestions;
+        manswersResultList = new ArrayList<>(noOfQuestions);
         for(int i=0;i<mquestionsList.size(); i++) {
-            if (!mquestionsList.get(i).getAnswer().isEmpty()) {
+            if (!manswersSelectedList.get(i).isEmpty()) {
                 if (mquestionsList.get(i).getAnswer().equals(manswersSelectedList.get(i))) {
                     noOfQuestionsCorrect += 1;
                     manswersResultList.add(true);
@@ -180,11 +192,11 @@ public class QuestionHolderActivity extends AppCompatActivity implements Questio
                 }
             } else {
                 noOfQuestionsAttempted -= 1;
+                manswersResultList.add(false);
             }
         }
 
         populateFirebaseResult();
-
     }
 
     public void populateFirebaseResult() {

@@ -24,11 +24,12 @@ public class Question {
     }
 
     @Builder
-    public Question(String question, String answer) {
+    public Question(String question, String answer, ArrayList<String> options) {
 
 
         this.question = question;
         this.answer = answer;
+        this.options = options;
     }
 
 }
