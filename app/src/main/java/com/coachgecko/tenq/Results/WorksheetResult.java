@@ -20,13 +20,17 @@ public class WorksheetResult {
     private ArrayList<String> manswersSelectedList;
     private ArrayList<Boolean> manswersResultList;
 
+    private int noOfStars;
+    private String score;
+
     public WorksheetResult() {
     }
 
     @Builder
     public WorksheetResult(String key, String worksheetID, String studentID, int noofQuestions,
                            int noOfQuestionsAttempted, int noofCorrectQuestions,
-                           ArrayList<String> manswersSelectedList, ArrayList<Boolean> manswersResultList) {
+                           ArrayList<String> manswersSelectedList, int noOfStars, String score,
+                           ArrayList<Boolean> manswersResultList) {
         this.key = key;
         this.worksheetID = worksheetID;
         this.studentID = studentID;
@@ -36,6 +40,8 @@ public class WorksheetResult {
         this.noOfCorrectQuestions = noofCorrectQuestions;
         this.manswersResultList = manswersResultList;
         this.manswersSelectedList = manswersSelectedList;
+        this.noOfStars = noOfStars;
+        this.score = score;
     }
 
 }

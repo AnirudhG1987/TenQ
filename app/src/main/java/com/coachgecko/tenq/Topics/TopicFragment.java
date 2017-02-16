@@ -3,7 +3,6 @@ package com.coachgecko.tenq.Topics;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,10 +26,9 @@ public class TopicFragment extends Fragment {
     ArrayAdapter<String> topicsSpinnerAdapter;
     OnTopicSelectedListener mCallback;
     private Spinner mTopicsSpinner;
-    private String mTopic;
-    private View rootview;
     private DatabaseReference mfiredatabaseRef;
     private List<String> mTopicsList;
+    private List<String> mTopicKeyList;
 
     public TopicFragment() {
         // Required empty public constructor
@@ -60,7 +58,7 @@ public class TopicFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        rootview = inflater.inflate(R.layout.fragment_topic, container, false);
+        View rootview = inflater.inflate(R.layout.fragment_topic, container, false);
 
         mTopicsSpinner = (Spinner) rootview.findViewById(R.id.spinnerTopicList);
         mfiredatabaseRef = FirebaseDatabase.getInstance().getReference("courses").child("math")
@@ -71,27 +69,24 @@ public class TopicFragment extends Fragment {
         return rootview;
     }
 
-    @Override
-
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-
-    }
 
     private void setupTopicsSpinner() {
 
         mTopicsList = new ArrayList<>();
+        mTopicKeyList = new ArrayList<>();
 
-        Query query = mfiredatabaseRef.orderByValue().equalTo(true);
+        Query query = mfiredatabaseRef.orderByChild("topicName");
         query.addListenerForSingleValueEvent(new ValueEventListener() {
 
             @Override
 
             public void onDataChange(DataSnapshot dataSnapshot) {
 
+
                 for (DataSnapshot data : dataSnapshot.getChildren()) {
 
-                    final String topicKey = data.getKey();
-                    mTopicsList.add(topicKey);
+                    mTopicsList.add(data.child("topicName").getValue().toString());
+                    mTopicKeyList.add(data.getKey());
                 }
 
                 topicsSpinnerAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, mTopicsList);
@@ -116,21 +111,15 @@ public class TopicFragment extends Fragment {
 
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
-                String selection = (String) parent.getItemAtPosition(position);
-
-                if (!TextUtils.isEmpty(selection)) {
-                    mTopic = selection;
-                    mCallback.onTopicSelected(mTopic);
-                }
-
-
+                System.out.println("position is " + position + " sldfsd " + mTopicKeyList.get(position));
+                mCallback.onTopicSelected(mTopicKeyList.get(position));
             }
 
             @Override
 
             public void onNothingSelected(AdapterView<?> parent) {
-                mTopic = (String) parent.getItemAtPosition(0);
-                mCallback.onTopicSelected(mTopic);
+                // mTopic = (String) parent.getItemAtPosition(0);
+                // mCallback.onTopicSelected(mTopic);
             }
 
         });

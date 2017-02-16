@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/resultItemLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="5dp">
+
+    <TextView
+        android:id="@+id/resultQuestion"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:padding="5dp"
+        android:text="Worksheet Name"
+        android:textSize="15dp"/>
+
+    <TextView
+        android:id="@+id/answerSelected"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/resultQuestion"
+        android:padding="5dp"
+        android:text="Answer Selected"
+        android:textSize="15dp"/>
+
+    <TextView
+        android:id="@+id/answerCorrect"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/resultQuestion"
+        android:layout_toRightOf="@id/answerSelected"
+        android:padding="5dp"
+        android:text="Correct Ans"
+        android:textSize="15dp"/>
+
+    <ImageView
+        android:id="@+id/worksheetImg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:src="@mipmap/ic_launcher"
+        />
+
+</RelativeLayout>

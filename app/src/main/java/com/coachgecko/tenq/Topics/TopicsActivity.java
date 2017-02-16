@@ -74,31 +74,6 @@ public class TopicsActivity extends AppCompatActivity {
                     Topic topic = Topic.builder().topicName(topicKey).build();
                     topic.setKey(topicKey);
                     mtopicsList.add(topic);
-                  /*  Query topicNameQuery = FirebaseDatabase.getInstance().getReference("topics").child(topicKey).child("topicName");
-                    System.out.println("topic name is "+topicNameQuery.toString());
-                    topicNameQuery.addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            System.out.println("CHECK THIS "+ dataSnapshot.toString());
-                         //   for (DataSnapshot data : dataSnapshot.getChildren()) {
-                         //       if(data.getKey()=="topicName") {
-                                    String topicName = dataSnapshot.getValue(String.class);
-                                    System.out.println("HEY TOPIC "+ topicName+" key "+topicKey);
-                                    Topic topic = Topic.builder().topicName(topicName).build();
-                                    topic.setKey(topicKey);
-                                    mtopicsList.add(topic);
-
-                            //    }
-                           // }
-                        }
-
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-
-                        }
-                    });
-
-                    */
                 }
            }
 

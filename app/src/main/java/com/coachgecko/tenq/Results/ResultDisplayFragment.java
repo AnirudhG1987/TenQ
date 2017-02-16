@@ -1,4 +1,4 @@
-package com.coachgecko.tenq.Worksheets;
+package com.coachgecko.tenq.Results;
 
 import android.content.Context;
 import android.content.Intent;
@@ -14,6 +14,8 @@ import android.widget.TextView;
 
 import com.coachgecko.tenq.Questions.QuestionHolderActivity;
 import com.coachgecko.tenq.R;
+import com.coachgecko.tenq.Worksheets.Worksheet;
+import com.coachgecko.tenq.Worksheets.WorksheetFragment;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -24,17 +26,17 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
-public class WorksheetFragment extends Fragment {
+public class ResultDisplayFragment extends Fragment {
 
     private RecyclerView mRecyclerView;
     private LinearLayoutManager mLinearLayoutManager;
-    private ArrayList<Worksheet> mworkSheetList;
+    private ArrayList<WorksheetResult> mResultsList;
 
-    private FirebaseRecyclerAdapter<Worksheet, WorksheetHolder> adapter;
+    private FirebaseRecyclerAdapter<WorksheetResult, WorksheetResultHolder> adapter;
 
     private DatabaseReference mfiredatabaseRef;
 
-    public WorksheetFragment() {
+    public ResultDisplayFragment() {
         // Required empty public constructor
     }
 
@@ -44,15 +46,15 @@ public class WorksheetFragment extends Fragment {
         // Inflate the layout for this fragment
         View rootview = inflater.inflate(R.layout.activity_recyclerview, container, false);
 
-        String topicKey = "";
+        String worksheetID = "";
         if (getArguments() != null) {
-            topicKey = getArguments().getString("topicKey");
+            worksheetID = getArguments().getString("worksheetID");
         }
 
         mRecyclerView = (RecyclerView) rootview.findViewById(R.id.recyclerList);
 
         // Figure out why divider decoration item cannot be used .. problem with the getApplicationContext()
-        // calls facebook... 
+        // calls facebook...
 
         // mRecyclerView.addItemDecoration(new DividerItemDecoration(
         //       getApplicationContext()
@@ -61,10 +63,10 @@ public class WorksheetFragment extends Fragment {
         mLinearLayoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(mLinearLayoutManager);
 
-        mfiredatabaseRef = FirebaseDatabase.getInstance().getReference("courses").child("math")
-                .child("MA06").child("topics").child(topicKey).child("worksheets");
+        mfiredatabaseRef = FirebaseDatabase.getInstance().getReference("finishedworksheets").child("id1")
+                .child(worksheetID);
 
-        setupWorksheets();
+        setupWorksheetResult();
 
         super.onCreate(savedInstanceState);
 
@@ -76,8 +78,8 @@ public class WorksheetFragment extends Fragment {
         return rootview;
     }
 
-    private void setupWorksheets() {
-        mworkSheetList = new ArrayList<>();
+    private void setupWorksheetResult() {
+        mResultsList = new ArrayList<>();
         Query query = mfiredatabaseRef;
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -138,26 +140,26 @@ public class WorksheetFragment extends Fragment {
 
     private void attachRecyclerViewAdapter() {
 
-        adapter = new FirebaseRecyclerAdapter<Worksheet, WorksheetHolder>(
+        adapter = new FirebaseRecyclerAdapter<Worksheet, WorksheetFragment.WorksheetHolder>(
                 Worksheet.class, R.layout.activity_worksheet_item,
-                WorksheetHolder.class, mfiredatabaseRef) {
+                WorksheetFragment.WorksheetHolder.class, mfiredatabaseRef) {
 
             @Override
-            public WorksheetHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            public WorksheetFragment.WorksheetHolder onCreateViewHolder(ViewGroup parent, int viewType) {
                 View itemView = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.activity_worksheet_item, parent, false);
 
-                return new WorksheetHolder(itemView);
+                return new WorksheetFragment.WorksheetHolder(itemView);
             }
 
             @Override
-            protected void populateViewHolder(WorksheetHolder v, Worksheet model, int position) {
+            protected void populateViewHolder(WorksheetFragment.WorksheetHolder v, Worksheet model, int position) {
                 v.worksheetName.setText(model.getName());
                 v.worksheetDescription.setText(model.getDescription());
             }
 
             @Override
-            public void onBindViewHolder(WorksheetHolder holder, int position) {
+            public void onBindViewHolder(WorksheetFragment.WorksheetHolder holder, int position) {
                 Worksheet worksheet = mworkSheetList.get(position);
                 holder.bindWorksheet(worksheet);
             }
@@ -179,7 +181,7 @@ public class WorksheetFragment extends Fragment {
         }
     }
 
-    public static class WorksheetHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public static class WorksheetResultHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         //2
 
         public TextView worksheetName;
@@ -217,4 +219,5 @@ public class WorksheetFragment extends Fragment {
             context.startActivity(intent);
         }
     }
+
 }

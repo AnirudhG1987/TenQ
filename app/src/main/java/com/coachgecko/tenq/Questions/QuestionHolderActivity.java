@@ -87,11 +87,9 @@ public class QuestionHolderActivity extends AppCompatActivity implements Questio
 
                     Context context = v.getContext();
                     Intent intent = new Intent(context, ResultsDisplayActivity.class);
-                    String s = "Questions Answered Correctly: " + noOfQuestionsCorrect;
-                    s = s + "\n" + "Questions Attempted: " + noOfQuestionsAttempted;
-                    s = s + "\n" + "Total Questions: " + noOfQuestions;
-
-                    intent.putExtra("resultDetails", s);
+                    intent.putExtra("questions", noOfQuestions);
+                    intent.putExtra("worksheetID", worksheetID);
+                    intent.putExtra("answers", noOfQuestionsCorrect);
                     context.startActivity(intent);
 
                 }
@@ -157,17 +155,19 @@ public class QuestionHolderActivity extends AppCompatActivity implements Questio
 
 
                 for (DataSnapshot data : dataSnapshot.getChildren()) {
-                    //figure out how to get this info from worksheets
+
                     System.out.println("CHECK THIS " + data.toString());
                     Question q = data.getValue(Question.class);
                     Collections.shuffle(q.getOptions());
                     mquestionsList.add(q);
                     noOfQuestions += 1;
                     manswersSelectedList.add("");
+
                     if (mquestionsList.size() == 1) {
                         populateQuestion(mquestionsList.get(0));
                     }
                     System.out.println("CHECK THIS KEY " + key);
+
                 }
             }
 
@@ -200,10 +200,15 @@ public class QuestionHolderActivity extends AppCompatActivity implements Questio
     }
 
     public void populateFirebaseResult() {
+
+        /// TODO no of stars to be added
+
         WorksheetResult result = WorksheetResult.builder().manswersResultList(manswersResultList)
                 .worksheetID(worksheetID).studentID("id1").manswersSelectedList(manswersSelectedList)
                 .noofCorrectQuestions(noOfQuestionsCorrect).noofQuestions(mquestionsList.size())
-                .noOfQuestionsAttempted(noOfQuestionsAttempted).build();
+                .noOfQuestionsAttempted(noOfQuestionsAttempted).noOfStars(4)
+                .score(noOfQuestionsCorrect + "/" + mquestionsList.size()).build();
+
         DatabaseReference resultFirebaseRef = FirebaseDatabase.getInstance()
                 .getReference("finishedworksheets").child("id1").child(worksheetID);
 
@@ -211,7 +216,6 @@ public class QuestionHolderActivity extends AppCompatActivity implements Questio
     }
 
     public void populateQuestion(Question question) {
-
 
         Fragment f = getSupportFragmentManager().findFragmentById(R.id.question);
         if (f!=null) {
@@ -223,16 +227,19 @@ public class QuestionHolderActivity extends AppCompatActivity implements Questio
 
         Bundle b = new Bundle();
         b.putString("question", question.getQuestion());
-        // shuffle the questions and use the question no as the seed.
+
         Random rnd = new Random(questionNo);
         String answer = manswersSelectedList.get(questionNo-1);
+
         int indexofAns;
+
         if(!answer.isEmpty()) {
             indexofAns = question.getOptions().indexOf(answer);
         }
         else{
             indexofAns = -1;
         }
+
         b.putStringArrayList("options", question.getOptions());
         b.putInt("index", indexofAns);
         qsf.setArguments(b);

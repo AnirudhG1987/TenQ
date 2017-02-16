@@ -14,19 +14,22 @@ public class Worksheet {
     private String key;
     private String description;
     private String name;
-    private int noofQuestions;
-    private int noofCorrectQuestions;
+    private int noOfQuestions;
+    private int noOfCorrectQuestions;
+    private String score;
 
     public Worksheet() {
     }
 
     @Builder
-    public Worksheet(String key, String name, String description, int noofQuestions, int noofCorrectQuestions) {
+    public Worksheet(String key, String name, String description,
+                     String score, int noOfQuestions, int noOfCorrectQuestions) {
         this.key = key;
         this.name = name;
         this.description = description;
-        this.noofCorrectQuestions = noofCorrectQuestions;
-        this.noofQuestions = noofQuestions;
+        this.noOfCorrectQuestions = noOfCorrectQuestions;
+        this.noOfQuestions = noOfQuestions;
+        this.score = score;
     }
 
 }

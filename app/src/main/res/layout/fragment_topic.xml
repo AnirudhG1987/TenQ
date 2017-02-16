@@ -1,25 +1,16 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 
-              android:layout_width="match_parent"
+                android:layout_width="match_parent"
 
-              android:layout_height="match_parent"
+                android:layout_height="wrap_content"
 
-              android:background="@drawable/border"
+                android:background="@drawable/border"
 
-              android:focusable="true"
+                android:focusable="true"
 
-              android:focusableInTouchMode="true"
+                android:focusableInTouchMode="true"
 
-              android:orientation="vertical">
-
-
-    <LinearLayout
-
-        android:layout_width="match_parent"
-
-        android:layout_height="wrap_content"
-
-        android:orientation="horizontal">
+                android:orientation="vertical">
 
 
         <TextView
@@ -43,9 +34,27 @@
 
             android:layout_width="match_parent"
 
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
+
+            android:layout_toRightOf="@+id/searchTopic"
             />
 
-    </LinearLayout>
+    <TextView
 
-</LinearLayout>
+        android:id="@+id/topicDisplay"
+
+        android:layout_width="wrap_content"
+
+        android:layout_height="wrap_content"
+
+        android:layout_below="@+id/searchTopic"
+
+        android:paddingLeft="20dp"
+        android:text="Worksheets of "
+
+
+        android:textSize="25dp"
+        />
+
+
+</RelativeLayout>

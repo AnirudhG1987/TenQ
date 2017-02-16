@@ -1,45 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="10dp">
 
         <ImageView
+            android:id="@+id/avatarImg"
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:src="@mipmap/ic_launcher"/>
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+
             <TextView
-                android:padding="5dp"
+                android:id="@+id/nameWelcome"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:text="Welcome Anirudh"
+                android:layout_toRightOf="@+id/avatarImg"
+                android:paddingTop="15dp"
+                android:text="Welcome Anirudh!"
                 android:textSize="30dp"/>
-        <TextView
-            android:padding="5dp"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:text="Current Score"
-            android:textSize="30dp"/>
-    </LinearLayout>
-
-
-    </LinearLayout>
 
     <TextView
+        android:id="@+id/pointsEarned"
         android:layout_width="match_parent"
-        android:layout_height="70dp"
-        android:padding="10dp"
+        android:layout_height="50dp"
+        android:layout_below="@+id/nameWelcome"
+        android:layout_toRightOf="@+id/avatarImg"
+        android:paddingTop="5dp"
+        android:text="Points Earned"
+        android:textSize="30dp"/>
+
+    <TextView
+        android:id="@+id/starsCollected"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_below="@+id/pointsEarned"
+        android:layout_toRightOf="@+id/avatarImg"
+        android:text="Stars Collected"
+        android:textSize="30dp"/>
+
+
+    <TextView
         android:id="@+id/math"
+        android:layout_width="wrap_content"
+        android:layout_height="70dp"
+        android:layout_below="@+id/starsCollected"
+        android:padding="10dp"
         android:text="Math"
         android:textSize="50dp"/>
 
 
-</LinearLayout>
+</RelativeLayout>

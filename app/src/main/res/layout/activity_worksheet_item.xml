@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/worksheetItemLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="5dp">
+
+    <TextView
+        android:id="@+id/worksheetName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:text="Worksheet Name"
+        android:textSize="30dp"/>
+
+    <TextView
+        android:id="@+id/worksheetDescription"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/worksheetName"
+        android:padding="5dp"
+        android:text="Worksheet Description"
+        android:textSize="15dp"/>
+
+    <TextView
+        android:id="@+id/worksheetScore"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@+id/worksheetImg"
+        android:padding="5dp"
+        android:text="9/10"
+        android:textSize="25dp"/>
+
+
+    <ImageView
+        android:id="@+id/worksheetImg"
+        android:layout_width="wrap_content"
+        android:layout_height="35dp"
+        android:layout_alignParentEnd="true"
+        android:src="@mipmap/ic_launcher"
+        />
+
+</RelativeLayout>

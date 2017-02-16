@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
@@ -15,7 +16,7 @@ import com.coachgecko.tenq.Topics.TopicFragment;
 public class WorksheetsDisplayActivity extends FragmentActivity
         implements TopicFragment.OnTopicSelectedListener {
 
-    private android.support.v4.app.FragmentTransaction transaction;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,7 +28,7 @@ public class WorksheetsDisplayActivity extends FragmentActivity
     }
 
     private Fragment setupFragment() {
-
+        FragmentTransaction transaction;
         FragmentManager manager = getSupportFragmentManager();
         transaction = manager.beginTransaction();
 
