@@ -8,6 +8,22 @@ import android.widget.TextView;
 
 import com.coachgecko.tenq.Worksheets.WorksheetsDisplayActivity;
 
+
+/*
+
+    This Activity handles the welcome screen for registered user.
+    The Following are displayed.
+    
+    (TBD)
+    1. Avatar 
+    2. Grade
+    3. Name
+    4. Current Level (design a proficiency level tracker)
+    5. Maybe points
+
+*/
+
+
 public class WelcomeScreenActivity extends AppCompatActivity {
 
     @Override
@@ -15,6 +31,12 @@ public class WelcomeScreenActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome_screen);
 
+        // this is the current list of subjects that the student registered. This wil be pulled from 
+        // the firebase. Currently a text view
+        
+        // Need to format it. 
+        
+        //On click takes you to the TopicsActivity.
         TextView math = (TextView)findViewById(R.id.math);
         math.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -24,10 +46,6 @@ public class WelcomeScreenActivity extends AppCompatActivity {
             }
         });
 
-
     }
-
-
-
 
 }
