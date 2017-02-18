@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:padding="5dp"
-        android:text="Worksheet Name"
+        android:text="Question"
         android:textSize="15dp"/>
 
     <TextView
@@ -34,7 +34,7 @@
         android:textSize="15dp"/>
 
     <ImageView
-        android:id="@+id/worksheetImg"
+        android:id="@+id/resultImg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"

@@ -10,6 +10,8 @@ import com.coachgecko.tenq.R;
 
 public class ResultsDisplayActivity extends FragmentActivity {
 
+    private FragmentTransaction transaction;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -21,11 +23,11 @@ public class ResultsDisplayActivity extends FragmentActivity {
     }
 
     private Fragment setupResultSummaryFragment() {
-        FragmentTransaction transaction;
+
         FragmentManager manager = getSupportFragmentManager();
         transaction = manager.beginTransaction();
 
-        Fragment fragment = new ResultDisplayFragment();
+        Fragment fragment = new ResultSummaryFragment();
 
 
         Bundle extras = getIntent().getExtras();
@@ -38,7 +40,7 @@ public class ResultsDisplayActivity extends FragmentActivity {
     }
 
     private Fragment setupResultDisplayFragment() {
-        FragmentTransaction transaction;
+
         FragmentManager manager = getSupportFragmentManager();
         transaction = manager.beginTransaction();
 

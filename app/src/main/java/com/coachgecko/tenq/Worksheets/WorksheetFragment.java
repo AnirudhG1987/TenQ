@@ -89,6 +89,9 @@ public class WorksheetFragment extends Fragment {
 
                     /// THIS IS to get worksheet name and description , think of something better
                     Query query = FirebaseDatabase.getInstance().getReference("worksheets").child(key).child("details");
+                    if (query != null) {
+
+
                     query.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
@@ -100,31 +103,46 @@ public class WorksheetFragment extends Fragment {
                             Query query = FirebaseDatabase.getInstance()
                                     .getReference("finishedworksheets").child("id1")
                                     .child(key).child("score");
-                            query.addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(DataSnapshot dataSnapshot) {
 
-                                    mworkSheetList.add(Worksheet.builder().key(key)
-                                            .name(name)
-                                            .description(description)
-                                            .score(dataSnapshot.getValue().toString()).build());
+                            if (query != null) {
+                                query.addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(DataSnapshot dataSnapshot) {
 
-                                    adapter.notifyDataSetChanged();
+                                        if (dataSnapshot.getValue() != null) {
 
-                                    System.out.println("worksheet added " + mworkSheetList.size());
+                                            mworkSheetList.add(Worksheet.builder().key(key)
+                                                    .name(name)
+                                                    .description(description)
+                                                    .score(dataSnapshot.getValue().toString()).build());
 
-                                }
+                                        } else {
 
-                                @Override
-                                public void onCancelled(DatabaseError databaseError) {
-                                }
-                            });
+                                            mworkSheetList.add(Worksheet.builder().key(key)
+                                                    .name(name)
+                                                    .description(description).build());
+
+                                        }
+                                        adapter.notifyDataSetChanged();
+
+                                        System.out.println("worksheet added " + mworkSheetList.size());
+
+
+                                    }
+
+                                    @Override
+                                    public void onCancelled(DatabaseError databaseError) {
+                                    }
+                                });
+                            }
                         }
 
                         @Override
                         public void onCancelled(DatabaseError databaseError) {
                         }
                     });
+                    }
+
                 }
             }
 

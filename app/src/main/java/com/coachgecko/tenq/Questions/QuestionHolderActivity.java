@@ -33,8 +33,8 @@ public class QuestionHolderActivity extends AppCompatActivity implements Questio
     int noOfQuestionsAttempted;
     int noOfQuestions;
     private ArrayList<Question> mquestionsList;
-    private ArrayList<String> manswersSelectedList;
-    private ArrayList<Boolean> manswersResultList;
+    // private ArrayList<String> manswersSelectedList;
+    // private ArrayList<Boolean> manswersResultList;
     private DatabaseReference mfiredatabaseRef;
     private int questionNo;
     private String worksheetID;
@@ -47,7 +47,7 @@ public class QuestionHolderActivity extends AppCompatActivity implements Questio
         noOfQuestions = 0;
         questionNo = 1;
         mquestionsList = new ArrayList<>();
-        manswersSelectedList = new ArrayList<>();
+        // manswersSelectedList = new ArrayList<>();
 
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
@@ -82,7 +82,7 @@ public class QuestionHolderActivity extends AppCompatActivity implements Questio
                         nextButton.setText("Submit");
                     }
                 } else {
-                    //recheckSubmit();
+
                     checkSolution();
 
                     Context context = v.getContext();
@@ -161,7 +161,8 @@ public class QuestionHolderActivity extends AppCompatActivity implements Questio
                     Collections.shuffle(q.getOptions());
                     mquestionsList.add(q);
                     noOfQuestions += 1;
-                    manswersSelectedList.add("");
+
+                    //     manswersSelectedList.add("");
 
                     if (mquestionsList.size() == 1) {
                         populateQuestion(mquestionsList.get(0));
@@ -181,18 +182,19 @@ public class QuestionHolderActivity extends AppCompatActivity implements Questio
 
     public void checkSolution() {
         noOfQuestionsAttempted = noOfQuestions;
-        manswersResultList = new ArrayList<>(noOfQuestions);
+        //manswersResultList = new ArrayList<>(noOfQuestions);
         for(int i=0;i<mquestionsList.size(); i++) {
-            if (!manswersSelectedList.get(i).isEmpty()) {
-                if (mquestionsList.get(i).getAnswer().equals(manswersSelectedList.get(i))) {
+            //   if (!manswersSelectedList.get(i).isEmpty()) {
+            if (!mquestionsList.get(i).getAnswerSelected().isEmpty()) {
+                if (mquestionsList.get(i).getAnswer().equals(mquestionsList.get(i).getAnswerSelected())) {
                     noOfQuestionsCorrect += 1;
-                    manswersResultList.add(true);
+                    mquestionsList.get(i).setResult(true);
                 } else {
-                    manswersResultList.add(false);
+                    mquestionsList.get(i).setResult(false);
                 }
             } else {
                 noOfQuestionsAttempted -= 1;
-                manswersResultList.add(false);
+                mquestionsList.get(i).setResult(false);
             }
         }
 
@@ -203,11 +205,10 @@ public class QuestionHolderActivity extends AppCompatActivity implements Questio
 
         /// TODO no of stars to be added
 
-        WorksheetResult result = WorksheetResult.builder().manswersResultList(manswersResultList)
-                .worksheetID(worksheetID).studentID("id1").manswersSelectedList(manswersSelectedList)
-                .noofCorrectQuestions(noOfQuestionsCorrect).noofQuestions(mquestionsList.size())
-                .noOfQuestionsAttempted(noOfQuestionsAttempted).noOfStars(4)
-                .score(noOfQuestionsCorrect + "/" + mquestionsList.size()).build();
+        WorksheetResult result = WorksheetResult.builder().questionsList(mquestionsList)
+                .worksheetID(worksheetID).studentID("id1").noofCorrectQuestions(noOfQuestionsCorrect)
+                .noofQuestions(mquestionsList.size()).noOfQuestionsAttempted(noOfQuestionsAttempted)
+                .noOfStars(4).score(noOfQuestionsCorrect + "/" + mquestionsList.size()).build();
 
         DatabaseReference resultFirebaseRef = FirebaseDatabase.getInstance()
                 .getReference("finishedworksheets").child("id1").child(worksheetID);
@@ -229,7 +230,7 @@ public class QuestionHolderActivity extends AppCompatActivity implements Questio
         b.putString("question", question.getQuestion());
 
         Random rnd = new Random(questionNo);
-        String answer = manswersSelectedList.get(questionNo-1);
+        String answer = mquestionsList.get(questionNo - 1).getAnswerSelected();
 
         int indexofAns;
 
@@ -250,6 +251,6 @@ public class QuestionHolderActivity extends AppCompatActivity implements Questio
 
     @Override
     public void onAnswerClicked(String answer) {
-        manswersSelectedList.set(questionNo -1, answer);
+        mquestionsList.get(questionNo - 1).setAnswerSelected(answer);
     }
 }

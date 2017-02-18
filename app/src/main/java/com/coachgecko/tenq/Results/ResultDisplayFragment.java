@@ -1,7 +1,5 @@
 package com.coachgecko.tenq.Results;
 
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -12,10 +10,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.coachgecko.tenq.Questions.QuestionHolderActivity;
+import com.coachgecko.tenq.Questions.Question;
 import com.coachgecko.tenq.R;
-import com.coachgecko.tenq.Worksheets.Worksheet;
-import com.coachgecko.tenq.Worksheets.WorksheetFragment;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -30,9 +26,11 @@ public class ResultDisplayFragment extends Fragment {
 
     private RecyclerView mRecyclerView;
     private LinearLayoutManager mLinearLayoutManager;
-    private ArrayList<WorksheetResult> mResultsList;
+    private ArrayList<Question> mResultsList;
 
-    private FirebaseRecyclerAdapter<WorksheetResult, WorksheetResultHolder> adapter;
+    //private WorksheetResult worksheetResult;
+
+    private FirebaseRecyclerAdapter<Question, WorksheetResultHolder> adapter;
 
     private DatabaseReference mfiredatabaseRef;
 
@@ -63,8 +61,10 @@ public class ResultDisplayFragment extends Fragment {
         mLinearLayoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(mLinearLayoutManager);
 
+        System.out.println("worksheet id is " + worksheetID);
+
         mfiredatabaseRef = FirebaseDatabase.getInstance().getReference("finishedworksheets").child("id1")
-                .child(worksheetID);
+                .child(worksheetID).child("questionsList");
 
         setupWorksheetResult();
 
@@ -84,49 +84,12 @@ public class ResultDisplayFragment extends Fragment {
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                System.out.println("SNAPSHOT " + dataSnapshot.toString() + " ");
+
                 for (DataSnapshot data : dataSnapshot.getChildren()) {
-                    final String key = data.getKey();
-                    System.out.println("this is the key " + data.getKey() + " ");
 
-                    /// THIS IS to get worksheet name and description , think of something better
-                    Query query = FirebaseDatabase.getInstance().getReference("worksheets").child(key).child("details");
-                    query.addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            System.out.println("SNAPSHOT 2" + dataSnapshot.toString() + " key " + key + " value " + dataSnapshot.getValue());
-
-                            final String name = dataSnapshot.child("name").getValue().toString();
-                            final String description = dataSnapshot.child("description").getValue().toString();
-                            // this is to get the score and no of stars
-                            Query query = FirebaseDatabase.getInstance()
-                                    .getReference("finishedworksheets").child("id1")
-                                    .child(key).child("score");
-                            query.addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(DataSnapshot dataSnapshot) {
-
-                                    mworkSheetList.add(Worksheet.builder().key(key)
-                                            .name(name)
-                                            .description(description)
-                                            .score(dataSnapshot.getValue().toString()).build());
-
-                                    adapter.notifyDataSetChanged();
-
-                                    System.out.println("worksheet added " + mworkSheetList.size());
-
-                                }
-
-                                @Override
-                                public void onCancelled(DatabaseError databaseError) {
-                                }
-                            });
-                        }
-
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-                        }
-                    });
+                    System.out.println("CHECK THIS " + data.toString());
+                    Question q = data.getValue(Question.class);
+                    mResultsList.add(q);
                 }
             }
 
@@ -140,33 +103,34 @@ public class ResultDisplayFragment extends Fragment {
 
     private void attachRecyclerViewAdapter() {
 
-        adapter = new FirebaseRecyclerAdapter<Worksheet, WorksheetFragment.WorksheetHolder>(
-                Worksheet.class, R.layout.activity_worksheet_item,
-                WorksheetFragment.WorksheetHolder.class, mfiredatabaseRef) {
+        adapter = new FirebaseRecyclerAdapter<Question, WorksheetResultHolder>(
+                Question.class, R.layout.activity_result_item,
+                WorksheetResultHolder.class, mfiredatabaseRef) {
 
             @Override
-            public WorksheetFragment.WorksheetHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            public WorksheetResultHolder onCreateViewHolder(ViewGroup parent, int viewType) {
                 View itemView = LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.activity_worksheet_item, parent, false);
+                        .inflate(R.layout.activity_result_item, parent, false);
 
-                return new WorksheetFragment.WorksheetHolder(itemView);
+                return new WorksheetResultHolder(itemView);
             }
 
             @Override
-            protected void populateViewHolder(WorksheetFragment.WorksheetHolder v, Worksheet model, int position) {
-                v.worksheetName.setText(model.getName());
-                v.worksheetDescription.setText(model.getDescription());
+            protected void populateViewHolder(WorksheetResultHolder v, Question model, int position) {
+                v.questionTV.setText(model.getQuestion());
+                v.answerSelected.setText(model.getAnswerSelected());
+                v.correctAns.setText(model.getAnswer());
             }
 
             @Override
-            public void onBindViewHolder(WorksheetFragment.WorksheetHolder holder, int position) {
-                Worksheet worksheet = mworkSheetList.get(position);
-                holder.bindWorksheet(worksheet);
+            public void onBindViewHolder(WorksheetResultHolder holder, int position) {
+                Question question = mResultsList.get(position);
+                holder.bindWorksheetResult(question);
             }
 
             @Override
             public int getItemCount() {
-                return mworkSheetList.size();
+                return mResultsList.size();
             }
 
         };
@@ -184,39 +148,35 @@ public class ResultDisplayFragment extends Fragment {
     public static class WorksheetResultHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         //2
 
-        public TextView worksheetName;
-        public TextView worksheetDescription;
-        public TextView worksheetScore;
-        public ImageView worksheetImage;
+        public TextView questionTV;
+        public TextView answerSelected;
+        public TextView correctAns;
+        public ImageView resultImg;
 
-        private Worksheet mworksheet;
+        private Question question;
 
-        public WorksheetHolder(View v) {
+        public WorksheetResultHolder(View v) {
             super(v);
 
-            worksheetName = (TextView) v.findViewById(R.id.worksheetName);
-            worksheetDescription = (TextView) v.findViewById(R.id.worksheetDescription);
-            worksheetScore = (TextView) v.findViewById(R.id.worksheetScore);
-            worksheetImage = (ImageView) v.findViewById(R.id.worksheetImg);
+            questionTV = (TextView) v.findViewById(R.id.resultQuestion);
+            answerSelected = (TextView) v.findViewById(R.id.answerSelected);
+            correctAns = (TextView) v.findViewById(R.id.answerCorrect);
+            resultImg = (ImageView) v.findViewById(R.id.resultImg);
             v.setOnClickListener(this);
         }
 
-        public void bindWorksheet(Worksheet worksheet) {
+        public void bindWorksheetResult(Question question) {
 
-            mworksheet = worksheet;
-            worksheetName.setText(mworksheet.getName());
-            worksheetDescription.setText(mworksheet.getDescription());
-            worksheetScore.setText(mworksheet.getScore());
-            worksheetImage.setImageResource(R.mipmap.fourstars);
+            this.question = question;
+            questionTV.setText(question.getQuestion());
+            answerSelected.setText(question.getAnswerSelected());
+            correctAns.setText(question.getAnswer());
+            //resultImg.setImageResource(R.mipmap.fourstars);
         }
 
         @Override
         public void onClick(View v) {
-            Context context = itemView.getContext();
-
-            Intent intent = new Intent(context, QuestionHolderActivity.class);
-            intent.putExtra("worksheetID", mworksheet.getKey());
-            context.startActivity(intent);
+            // later you can show detailed solution
         }
     }
 

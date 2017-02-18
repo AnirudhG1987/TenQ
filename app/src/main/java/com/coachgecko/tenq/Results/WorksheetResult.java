@@ -1,5 +1,7 @@
 package com.coachgecko.tenq.Results;
 
+import com.coachgecko.tenq.Questions.Question;
+
 import java.util.ArrayList;
 
 import lombok.Data;
@@ -17,8 +19,8 @@ public class WorksheetResult {
     private int noOfQuestions;
     private int noOfCorrectQuestions;
     private int noOfQuestionsAttempted;
-    private ArrayList<String> manswersSelectedList;
-    private ArrayList<Boolean> manswersResultList;
+    private ArrayList<Question> questionsList;
+    //private ArrayList<Boolean> manswersResultList;
 
     private int noOfStars;
     private String score;
@@ -29,8 +31,7 @@ public class WorksheetResult {
     @Builder
     public WorksheetResult(String key, String worksheetID, String studentID, int noofQuestions,
                            int noOfQuestionsAttempted, int noofCorrectQuestions,
-                           ArrayList<String> manswersSelectedList, int noOfStars, String score,
-                           ArrayList<Boolean> manswersResultList) {
+                           ArrayList<Question> questionsList, int noOfStars, String score) {
         this.key = key;
         this.worksheetID = worksheetID;
         this.studentID = studentID;
@@ -38,8 +39,8 @@ public class WorksheetResult {
         this.noOfQuestions = noofQuestions;
         this.noOfQuestionsAttempted = noOfQuestionsAttempted;
         this.noOfCorrectQuestions = noofCorrectQuestions;
-        this.manswersResultList = manswersResultList;
-        this.manswersSelectedList = manswersSelectedList;
+        this.questionsList = questionsList;
+        //this.manswersSelectedList = manswersSelectedList;
         this.noOfStars = noOfStars;
         this.score = score;
     }
