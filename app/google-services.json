@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "1026650691578",
+    "firebase_url": "https://tenq-5f3d7.firebaseio.com",
+    "project_id": "tenq-5f3d7",
+    "storage_bucket": "tenq-5f3d7.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1026650691578:android:8f62b55027af79f2",
+        "android_client_info": {
+          "package_name": "com.coachgecko.tenq"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1026650691578-ae7skpn3oj09oubvvh1irj65ghg33ogb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAa5mAqCImIPDzYit3XCQxotqiXVYxV-AQ"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

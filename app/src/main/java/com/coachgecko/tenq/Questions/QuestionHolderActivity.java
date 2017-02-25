@@ -62,8 +62,7 @@ public class QuestionHolderActivity extends AppCompatActivity implements Questio
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_question_holder);
 
-
-        questionNoTextView = (TextView) findViewById(R.id.questionNo);
+        questionNoTextView = (TextView) findViewById(R.id.que);
         if (questionNoTextView != null) {
             questionNoTextView.setText("Question No " + questionNo);
         }

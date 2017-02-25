@@ -1,49 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="0.5"
-        android:padding="5dp"
-        android:textAlignment="center"
-        android:textSize="30dp"
-        android:id="@+id/questionNo"/>
+
 
 
     <FrameLayout
-        class="com.coachgecko.tenq.Questions.QuestionFragment"
         android:id="@+id/question"
+        class="com.coachgecko.tenq.Questions.QuestionFragment"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="4"
         />
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:orientation="horizontal" android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="0.5">
+                  android:layout_width="match_parent"
+                  android:layout_height="0dp"
+                  android:layout_weight="0.5"
+                  android:orientation="horizontal">
 
         <Button
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="prev"
-            android:textAllCaps="true"
             android:id="@+id/btn_prev"
-            android:padding="1dp"
-            android:background="@color/btn_prev"/>
-
-        <Button
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:background="@color/btn_prev"
+            android:padding="1dp"
+            android:text="prev"
+            android:textAllCaps="true"/>
+
+        <Button
             android:id="@+id/btn_next"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
             android:background="@color/btn_next"
-            android:textAllCaps="true"
-            android:text="next"/>
+            android:text="next"
+            android:textAllCaps="true"/>
 
     </LinearLayout>
 
