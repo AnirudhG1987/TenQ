@@ -6,17 +6,14 @@
               android:orientation="vertical">
 
 
-    <fragment
+    <FrameLayout
 
         android:id="@+id/search_topic_fragment"
-
-        android:name="com.coachgecko.tenq.Topics.TopicFragment"
-
         android:layout_width="match_parent"
-
         android:layout_height="wrap_content"
+        class="com.coachgecko.tenq.Topics.TopicFragment"
 
-        tools:layout="@layout/fragment_topic"/>
+        />
 
 
     <FrameLayout

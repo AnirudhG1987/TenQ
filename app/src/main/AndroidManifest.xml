@@ -17,7 +17,7 @@
         </activity>
         <activity
             android:name=".Authentication.SignupActivity"
-            android:label="SignUp" />
+            android:label="Singup" />
         <activity
             android:name=".Authentication.ResetPasswordActivity"
             android:label="ResetPassword" />
@@ -25,8 +25,6 @@
             android:name=".Questions.QuestionHolderActivity"
             android:label="Question" />
         <activity android:name=".WelcomeScreenActivity" />
-        <activity android:name=".Topics.TopicsActivity" />
-        <activity android:name=".Registration.RegistrationActivity" />
         <activity android:name=".Worksheets.WorksheetsDisplayActivity"/>
         <activity android:name=".Results.ResultsDisplayActivity"></activity>
     </application>

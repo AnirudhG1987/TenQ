@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:padding="10dp"
                 android:orientation="vertical">
 
 
@@ -17,8 +18,8 @@
                 android:layout_height="50dp"
                 android:layout_toRightOf="@+id/avatarImg"
                 android:paddingTop="15dp"
-                android:text="Welcome Anirudh!"
-                android:textSize="30dp"/>
+                android:text="Welcome"
+                android:textSize="20dp"/>
 
     <TextView
         android:id="@+id/pointsEarned"
@@ -28,7 +29,7 @@
         android:layout_toRightOf="@+id/avatarImg"
         android:paddingTop="5dp"
         android:text="Points Earned"
-        android:textSize="30dp"/>
+        android:textSize="20dp"/>
 
     <TextView
         android:id="@+id/starsCollected"
@@ -37,7 +38,7 @@
         android:layout_below="@+id/pointsEarned"
         android:layout_toRightOf="@+id/avatarImg"
         android:text="Stars Collected"
-        android:textSize="30dp"/>
+        android:textSize="20dp"/>
 
 
     <TextView
@@ -47,7 +48,7 @@
         android:layout_below="@+id/starsCollected"
         android:padding="10dp"
         android:text="Math"
-        android:textSize="50dp"/>
+        android:textSize="40dp"/>
 
 
 </RelativeLayout>

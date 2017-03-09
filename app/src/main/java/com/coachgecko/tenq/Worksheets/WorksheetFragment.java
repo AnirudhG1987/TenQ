@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.coachgecko.tenq.Questions.QuestionHolderActivity;
 import com.coachgecko.tenq.R;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -34,6 +35,8 @@ public class WorksheetFragment extends Fragment {
 
     private DatabaseReference mfiredatabaseRef;
 
+    private String currUserID;
+
     public WorksheetFragment() {
         // Required empty public constructor
     }
@@ -45,9 +48,15 @@ public class WorksheetFragment extends Fragment {
         View rootview = inflater.inflate(R.layout.activity_recyclerview, container, false);
 
         String topicKey = "";
+
+        String grade = "";
         if (getArguments() != null) {
             topicKey = getArguments().getString("topicKey");
+            grade = getArguments().getString("grade");
         }
+
+        currUserID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
 
         mRecyclerView = (RecyclerView) rootview.findViewById(R.id.recyclerList);
 
@@ -62,7 +71,7 @@ public class WorksheetFragment extends Fragment {
         mRecyclerView.setLayoutManager(mLinearLayoutManager);
 
         mfiredatabaseRef = FirebaseDatabase.getInstance().getReference("courses").child("math")
-                .child("MA06").child("topics").child(topicKey).child("worksheets");
+                .child(grade).child("topics").child(topicKey).child("worksheets");
 
         setupWorksheets();
 
@@ -82,11 +91,9 @@ public class WorksheetFragment extends Fragment {
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                System.out.println("SNAPSHOT " + dataSnapshot.toString() + " ");
-                for (DataSnapshot data : dataSnapshot.getChildren()) {
-                    final String key = data.getKey();
-                    System.out.println("this is the key " + data.getKey() + " ");
 
+                 for (DataSnapshot data : dataSnapshot.getChildren()) {
+                    final String key = data.getKey();
                     /// THIS IS to get worksheet name and description , think of something better
                     Query query = FirebaseDatabase.getInstance().getReference("worksheets").child(key).child("details");
                     if (query != null) {
@@ -95,13 +102,12 @@ public class WorksheetFragment extends Fragment {
                     query.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
-                            System.out.println("SNAPSHOT 2" + dataSnapshot.toString() + " key " + key + " value " + dataSnapshot.getValue());
 
                             final String name = dataSnapshot.child("name").getValue().toString();
                             final String description = dataSnapshot.child("description").getValue().toString();
                             // this is to get the score and no of stars
                             Query query = FirebaseDatabase.getInstance()
-                                    .getReference("finishedworksheets").child("id1")
+                                    .getReference("finishedworksheets").child(currUserID)
                                     .child(key).child("score");
 
                             if (query != null) {

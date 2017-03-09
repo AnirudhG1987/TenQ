@@ -13,26 +13,65 @@ import android.view.inputmethod.InputMethodManager;
 import com.coachgecko.tenq.R;
 import com.coachgecko.tenq.Topics.TopicFragment;
 
+import java.text.DecimalFormat;
+
+
+
 public class WorksheetsDisplayActivity extends FragmentActivity
         implements TopicFragment.OnTopicSelectedListener {
 
 
+    private String grade;
+    private Bundle extras;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_topicworksheet);
-        setupFragment();
+
+
+        extras = getIntent().getExtras();
+
+
+        if (extras != null) {
+            int gradeNo = extras.getInt("grade");
+            DecimalFormat formatter = new DecimalFormat("00");
+            grade = "MA"+formatter.format(gradeNo);
+        }
+        else{
+            grade = "MA04";
+        }
+
+        setupTopicFragment();
+        setupWorksheetListFragment();
 
     }
 
-    private Fragment setupFragment() {
+
+    private Fragment setupTopicFragment() {
+        FragmentTransaction transaction;
+        FragmentManager manager = getSupportFragmentManager();
+        transaction = manager.beginTransaction();
+
+        Fragment fragment = new TopicFragment();
+
+        Bundle b = new Bundle();
+        b.putString("grade", grade);
+        fragment.setArguments(b);
+        transaction.add(R.id.search_topic_fragment, fragment, "Search_Frag");
+        transaction.commit();
+
+        return fragment;
+    }
+
+    private Fragment setupWorksheetListFragment() {
         FragmentTransaction transaction;
         FragmentManager manager = getSupportFragmentManager();
         transaction = manager.beginTransaction();
 
         Fragment fragment = new WorksheetFragment();
+
 
         transaction.add(R.id.worksheet_fragment, fragment, "Result_Frag");
         transaction.commit();
@@ -43,9 +82,12 @@ public class WorksheetsDisplayActivity extends FragmentActivity
     @Override
     public void onTopicSelected(String topicName) {
         fragmentRefresher();
-        Fragment fragment = setupFragment();
+        Fragment fragment = setupWorksheetListFragment();
+
+        // send the topicID selected.
         Bundle b = new Bundle();
         b.putString("topicKey", topicName);
+        b.putString("grade", grade);
         fragment.setArguments(b);
         getSupportFragmentManager().beginTransaction().replace(R.id.worksheet_fragment, fragment).commit();
     }

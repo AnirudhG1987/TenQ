@@ -107,9 +107,13 @@ public class LoginActivity extends AppCompatActivity {
                                         Toast.makeText(LoginActivity.this, getString(R.string.auth_failed), Toast.LENGTH_LONG).show();
                                     }
                                 } else {
-                                    Intent intent = new Intent(LoginActivity.this, QuestionHolderActivity.class);
+
+                                    // On Successful login, start the Welcome Screen.
+
+                                    Intent intent = new Intent(LoginActivity.this, WelcomeScreenActivity.class);
                                     startActivity(intent);
                                     finish();
+
                                 }
                             }
                         });

@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.coachgecko.tenq.Questions.Question;
 import com.coachgecko.tenq.R;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -27,6 +28,8 @@ public class ResultDisplayFragment extends Fragment {
     private RecyclerView mRecyclerView;
     private LinearLayoutManager mLinearLayoutManager;
     private ArrayList<Question> mResultsList;
+
+    private String currUserID;
 
     //private WorksheetResult worksheetResult;
 
@@ -49,6 +52,12 @@ public class ResultDisplayFragment extends Fragment {
             worksheetID = getArguments().getString("worksheetID");
         }
 
+
+        currUserID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+
+
+
         mRecyclerView = (RecyclerView) rootview.findViewById(R.id.recyclerList);
 
         // Figure out why divider decoration item cannot be used .. problem with the getApplicationContext()
@@ -61,9 +70,8 @@ public class ResultDisplayFragment extends Fragment {
         mLinearLayoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(mLinearLayoutManager);
 
-        System.out.println("worksheet id is " + worksheetID);
 
-        mfiredatabaseRef = FirebaseDatabase.getInstance().getReference("finishedworksheets").child("id1")
+        mfiredatabaseRef = FirebaseDatabase.getInstance().getReference("finishedworksheets").child(currUserID)
                 .child(worksheetID).child("questionsList");
 
         setupWorksheetResult();
@@ -87,7 +95,6 @@ public class ResultDisplayFragment extends Fragment {
 
                 for (DataSnapshot data : dataSnapshot.getChildren()) {
 
-                    System.out.println("CHECK THIS " + data.toString());
                     Question q = data.getValue(Question.class);
                     mResultsList.add(q);
                 }

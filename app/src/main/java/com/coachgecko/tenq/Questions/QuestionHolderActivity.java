@@ -14,6 +14,7 @@ import android.widget.TextView;
 import com.coachgecko.tenq.R;
 import com.coachgecko.tenq.Results.ResultsDisplayActivity;
 import com.coachgecko.tenq.Results.WorksheetResult;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -41,6 +42,8 @@ public class QuestionHolderActivity extends AppCompatActivity implements Questio
 
     private TextView questionNoTextView;
 
+    private String currUserID;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -55,6 +58,9 @@ public class QuestionHolderActivity extends AppCompatActivity implements Questio
         }
 
 
+        currUserID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+
         mfiredatabaseRef = FirebaseDatabase.getInstance().getReference("worksheets").child(worksheetID).child("questions");
 
         setupQuestions();
@@ -62,10 +68,12 @@ public class QuestionHolderActivity extends AppCompatActivity implements Questio
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_question_holder);
 
-        questionNoTextView = (TextView) findViewById(R.id.que);
+        questionNoTextView = (TextView) findViewById(R.id.questionNo);
         if (questionNoTextView != null) {
             questionNoTextView.setText("Question No " + questionNo);
         }
+
+        this.setTitle("Question No"+ questionNo);
 
         final Button nextButton = (Button) findViewById(R.id.btn_next);
         final Button prevButton = (Button) findViewById(R.id.btn_prev);
@@ -75,7 +83,7 @@ public class QuestionHolderActivity extends AppCompatActivity implements Questio
             public void onClick(View v) {
                 if (questionNo < mquestionsList.size()) {
                     questionNo += 1;
-                    questionNoTextView.setText("Question No " + questionNo);
+                    setTitle("Question No"+ questionNo);
                     populateQuestion(mquestionsList.get(questionNo - 1));
                     if (questionNo == mquestionsList.size()) {
                         nextButton.setText("Submit");
@@ -108,6 +116,7 @@ public class QuestionHolderActivity extends AppCompatActivity implements Questio
                 }
             }
         });
+
 
     }
 
@@ -155,7 +164,6 @@ public class QuestionHolderActivity extends AppCompatActivity implements Questio
 
                 for (DataSnapshot data : dataSnapshot.getChildren()) {
 
-                    System.out.println("CHECK THIS " + data.toString());
                     Question q = data.getValue(Question.class);
                     Collections.shuffle(q.getOptions());
                     mquestionsList.add(q);
@@ -166,7 +174,6 @@ public class QuestionHolderActivity extends AppCompatActivity implements Questio
                     if (mquestionsList.size() == 1) {
                         populateQuestion(mquestionsList.get(0));
                     }
-                    System.out.println("CHECK THIS KEY " + key);
 
                 }
             }
@@ -181,9 +188,9 @@ public class QuestionHolderActivity extends AppCompatActivity implements Questio
 
     public void checkSolution() {
         noOfQuestionsAttempted = noOfQuestions;
-        //manswersResultList = new ArrayList<>(noOfQuestions);
+
         for(int i=0;i<mquestionsList.size(); i++) {
-            //   if (!manswersSelectedList.get(i).isEmpty()) {
+
             if (!mquestionsList.get(i).getAnswerSelected().isEmpty()) {
                 if (mquestionsList.get(i).getAnswer().equals(mquestionsList.get(i).getAnswerSelected())) {
                     noOfQuestionsCorrect += 1;
@@ -205,12 +212,12 @@ public class QuestionHolderActivity extends AppCompatActivity implements Questio
         /// TODO no of stars to be added
 
         WorksheetResult result = WorksheetResult.builder().questionsList(mquestionsList)
-                .worksheetID(worksheetID).studentID("id1").noofCorrectQuestions(noOfQuestionsCorrect)
+                .worksheetID(worksheetID).studentID(currUserID).noofCorrectQuestions(noOfQuestionsCorrect)
                 .noofQuestions(mquestionsList.size()).noOfQuestionsAttempted(noOfQuestionsAttempted)
                 .noOfStars(4).score(noOfQuestionsCorrect + "/" + mquestionsList.size()).build();
 
         DatabaseReference resultFirebaseRef = FirebaseDatabase.getInstance()
-                .getReference("finishedworksheets").child("id1").child(worksheetID);
+                .getReference("finishedworksheets").child(currUserID).child(worksheetID);
 
         resultFirebaseRef.setValue(result);
     }
@@ -222,6 +229,7 @@ public class QuestionHolderActivity extends AppCompatActivity implements Questio
             getSupportFragmentManager().beginTransaction().
                     remove(f).commit();
         }
+
 
         QuestionFragment qsf = new QuestionFragment();
 

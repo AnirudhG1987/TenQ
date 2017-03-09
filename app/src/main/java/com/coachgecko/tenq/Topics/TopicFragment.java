@@ -18,6 +18,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,8 +62,20 @@ public class TopicFragment extends Fragment {
         View rootview = inflater.inflate(R.layout.fragment_topic, container, false);
 
         mTopicsSpinner = (Spinner) rootview.findViewById(R.id.spinnerTopicList);
+
+
+        String grade = "MA04";
+
+        if (getArguments() != null) {
+            grade = getArguments().getString("grade");
+            System.out.println(grade);
+        }
+        else {
+            grade = "MA04";
+        }
+
         mfiredatabaseRef = FirebaseDatabase.getInstance().getReference("courses").child("math")
-                .child("MA06").child("topics");
+                .child(grade).child("topics");
 
         setupTopicsSpinner();
 
@@ -111,7 +124,6 @@ public class TopicFragment extends Fragment {
 
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
-                System.out.println("position is " + position + " sldfsd " + mTopicKeyList.get(position));
                 mCallback.onTopicSelected(mTopicKeyList.get(position));
             }
 
