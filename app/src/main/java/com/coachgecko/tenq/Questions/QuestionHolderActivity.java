@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.coachgecko.tenq.R;
+import com.coachgecko.tenq.Results.ResultSummaryFragment;
 import com.coachgecko.tenq.Results.ResultsDisplayActivity;
 import com.coachgecko.tenq.Results.WorksheetResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -34,11 +35,13 @@ public class QuestionHolderActivity extends AppCompatActivity implements Questio
     int noOfQuestionsAttempted;
     int noOfQuestions;
     private ArrayList<Question> mquestionsList;
-    // private ArrayList<String> manswersSelectedList;
-    // private ArrayList<Boolean> manswersResultList;
+
+
     private DatabaseReference mfiredatabaseRef;
     private int questionNo;
     private String worksheetID;
+    private String score;
+    private long noOfStars;
 
     private TextView questionNoTextView;
 
@@ -50,11 +53,17 @@ public class QuestionHolderActivity extends AppCompatActivity implements Questio
         noOfQuestions = 0;
         questionNo = 1;
         mquestionsList = new ArrayList<>();
-        // manswersSelectedList = new ArrayList<>();
 
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             worksheetID = extras.getString("worksheetID");
+        }
+        if (extras != null) {
+            score = extras.getString("pointsEarned");
+        }
+
+        if (extras != null) {
+            noOfStars = extras.getLong("starCollected");
         }
 
 
@@ -68,11 +77,6 @@ public class QuestionHolderActivity extends AppCompatActivity implements Questio
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_question_holder);
 
-        questionNoTextView = (TextView) findViewById(R.id.questionNo);
-        if (questionNoTextView != null) {
-            questionNoTextView.setText("Question No " + questionNo);
-        }
-
         this.setTitle("Question No"+ questionNo);
 
         final Button nextButton = (Button) findViewById(R.id.btn_next);
@@ -83,7 +87,7 @@ public class QuestionHolderActivity extends AppCompatActivity implements Questio
             public void onClick(View v) {
                 if (questionNo < mquestionsList.size()) {
                     questionNo += 1;
-                    setTitle("Question No"+ questionNo);
+                    setTitle("Question No : "+ questionNo);
                     populateQuestion(mquestionsList.get(questionNo - 1));
                     if (questionNo == mquestionsList.size()) {
                         nextButton.setText("Submit");
@@ -108,7 +112,7 @@ public class QuestionHolderActivity extends AppCompatActivity implements Questio
 
                 if (questionNo > 1) {
                     questionNo -= 1;
-                    questionNoTextView.setText("Question No " + questionNo);
+                    setTitle("Question No : "+ questionNo);
                     populateQuestion(mquestionsList.get(questionNo - 1));
                     if (questionNo == mquestionsList.size() - 1) {
                         nextButton.setText("Next");
@@ -211,15 +215,24 @@ public class QuestionHolderActivity extends AppCompatActivity implements Questio
 
         /// TODO no of stars to be added
 
+        long noOfStarsNew = ResultSummaryFragment.starsCalculator(noOfQuestions,noOfQuestionsCorrect);
         WorksheetResult result = WorksheetResult.builder().questionsList(mquestionsList)
                 .worksheetID(worksheetID).studentID(currUserID).noofCorrectQuestions(noOfQuestionsCorrect)
                 .noofQuestions(mquestionsList.size()).noOfQuestionsAttempted(noOfQuestionsAttempted)
-                .noOfStars(4).score(noOfQuestionsCorrect + "/" + mquestionsList.size()).build();
+                .noOfStars(noOfStars).build();
 
         DatabaseReference resultFirebaseRef = FirebaseDatabase.getInstance()
                 .getReference("finishedworksheets").child(currUserID).child(worksheetID);
 
         resultFirebaseRef.setValue(result);
+
+        /// code to update the points and stars collected.
+
+        DatabaseReference scoreUpdated = FirebaseDatabase.getInstance()
+                .getReference("students").child(currUserID).child("starsCollected");
+
+        // TODO only update if stars collected is more.
+        scoreUpdated.setValue(noOfStarsNew);
     }
 
     public void populateQuestion(Question question) {

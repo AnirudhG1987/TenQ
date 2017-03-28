@@ -14,7 +14,6 @@ import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.coachgecko.tenq.Questions.QuestionHolderActivity;
 import com.coachgecko.tenq.R;
 import com.coachgecko.tenq.WelcomeScreenActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -22,7 +21,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
@@ -31,12 +29,20 @@ import java.util.Locale;
 
 public class SignupActivity extends AppCompatActivity {
 
-    private EditText inputEmail, inputPassword, inputName, inputAge, inputGrade;
-    private Button btnSignIn, btnSignUp, btnResetPassword;
-    private Spinner spinnerCountry;
+    private EditText inputEmail;
+    private EditText inputPassword;
+    private EditText inputName;
+    private EditText inputDOB;
+    private EditText inputCountry;
+
+    private Button btnSignIn;
+    private Button btnSignUp;
+    private Button btnResetPassword;
+    private Spinner spinnerGrade;
     private ProgressBar progressBar;
     private FirebaseAuth auth;
-    private String countrySelected;
+    // Default this to zero to see if any grade was selected.
+    private int gradeSelected=0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,35 +57,29 @@ public class SignupActivity extends AppCompatActivity {
         inputEmail = (EditText) findViewById(R.id.email);
         inputPassword = (EditText) findViewById(R.id.password);
         inputName = (EditText) findViewById(R.id.your_full_name);
-        inputAge = (EditText) findViewById(R.id.your_age);
-        inputGrade = (EditText) findViewById(R.id.your_grade);
+        inputCountry = (EditText) findViewById(R.id.countryList);
+        spinnerGrade = (Spinner) findViewById(R.id.your_grade);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         btnResetPassword = (Button) findViewById(R.id.btn_reset_password);
 
-        spinnerCountry = (Spinner) findViewById(R.id.countryList);
+        inputDOB = (EditText) findViewById(R.id.your_DOB);
 
 
-        Locale[] locale = Locale.getAvailableLocales();
-        ArrayList<String> countries = new ArrayList<String>();
-        String country;
-        for( Locale loc : locale ){
-            country = loc.getDisplayCountry();
-            if( country.length() > 0 && !countries.contains(country) ){
-                countries.add( country );
-            }
-        }
-        Collections.sort(countries, String.CASE_INSENSITIVE_ORDER);
+        // Create an ArrayAdapter using the string array and a default spinner layout
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, countries);
-        spinnerCountry.setAdapter(adapter);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.grades_list, android.R.layout.simple_spinner_item);
+        // Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerGrade.setAdapter(adapter);
 
-        spinnerCountry.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        spinnerGrade.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
             @Override
 
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
-                countrySelected = (String) parent.getItemAtPosition(position);
+                gradeSelected = Integer.parseInt((String) parent.getItemAtPosition(position));
             }
 
             @Override
@@ -110,27 +110,32 @@ public class SignupActivity extends AppCompatActivity {
 
                 final String name = inputName.getText().toString().trim();
 
-                final int age,grade;
+                final String dob, country;
 
                 if (TextUtils.isEmpty(name)) {
                     Toast.makeText(getApplicationContext(), "Enter Your Name!", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
-                if (TextUtils.isEmpty(inputAge.getText().toString())) {
+                if (TextUtils.isEmpty(inputDOB.getText().toString())) {
                     Toast.makeText(getApplicationContext(), "Enter Your Age!", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 else {
-                    age = Integer.parseInt(inputAge.getText().toString().trim());
+                    dob = inputDOB.getText().toString().trim();
                 }
 
-                if (TextUtils.isEmpty(inputGrade.getText().toString())) {
-                    Toast.makeText(getApplicationContext(), "Enter Your Grade!", Toast.LENGTH_SHORT).show();
+                if (TextUtils.isEmpty(inputCountry.getText().toString())) {
+                    Toast.makeText(getApplicationContext(), "Enter Your Country!", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 else {
-                    grade = Integer.parseInt(inputGrade.getText().toString().trim());
+                     country = inputCountry.getText().toString().trim();
+                }
+
+                if (gradeSelected==0) {
+                    Toast.makeText(getApplicationContext(), "Select Your Grade!", Toast.LENGTH_SHORT).show();
+                    return;
                 }
 
                 if (TextUtils.isEmpty(email)) {
@@ -166,16 +171,23 @@ public class SignupActivity extends AppCompatActivity {
                                             Toast.LENGTH_SHORT).show();
                                 } else {
 
+
+                                    // get the user information of the student created
                                     FirebaseUser userFromRegistration = task.getResult().getUser();
+
+                                    // get the userID of the student
                                     String userId = userFromRegistration.getUid();
 
-                                    Student student = Student.builder().age(age).password(password)
-                                            .fullName(name).country(countrySelected).grade(grade)
+
+                                    // Create a student object with the details above for the profile
+                                    Student student = Student.builder().dob(dob).password(password)
+                                            .fullName(name).country(country).grade(gradeSelected)
                                             .email(email).pointsEarned(0).starsCollected(0).build();
 
+                                    // Store the student details under the child of the userID
                                     FirebaseDatabase.getInstance().getReference("students").child(userId).setValue(student);
 
-
+                                    // once done, start the WelcomeScreen
                                     startActivity(new Intent(SignupActivity.this, WelcomeScreenActivity.class));
                                     finish();
                                 }

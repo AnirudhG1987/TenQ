@@ -23,8 +23,8 @@ public class ResultSummaryFragment extends Fragment {
         // Required empty public constructor
     }
 
-    private static int starsImageRetriever(int noOfStars) {
-        switch (noOfStars) {
+    public static int starsImageRetriever(long noOfStars) {
+        switch ((int)noOfStars) {
 
             case 2:
                 return R.mipmap.twostars;
@@ -40,7 +40,7 @@ public class ResultSummaryFragment extends Fragment {
 
     }
 
-    private static int starsCalculator(int noOfQuestions, int noOfCorrectAns) {
+    public static long starsCalculator(int noOfQuestions, int noOfCorrectAns) {
         double percentage = (double) noOfCorrectAns / (double) noOfQuestions;
         if (percentage < 0.3) {
             return 1;
@@ -65,7 +65,7 @@ public class ResultSummaryFragment extends Fragment {
         int noOfQuestions = getArguments().getInt("questions");
         int noOfCorrectAns = getArguments().getInt("answers");
 
-        int noOfStars = starsCalculator(noOfQuestions, noOfCorrectAns);
+        long noOfStars = starsCalculator(noOfQuestions, noOfCorrectAns);
 
         starImg.setImageResource(starsImageRetriever(noOfStars));
         TextView scoreTxtView = (TextView) rootview.findViewById(R.id.resultScore);

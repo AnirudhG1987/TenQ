@@ -44,14 +44,11 @@ public class WelcomeScreenActivity extends AppCompatActivity {
 
     private String userId;
 
-    @InjectView(R.id.nameWelcome)
-    TextView nameTV;
+    private TextView nameTV;
 
-    @InjectView(R.id.pointsEarned)
-    TextView pointTV;
+    private TextView pointTV;
 
-    @InjectView(R.id.starsCollected)
-    TextView starsTV;
+    private TextView starsTV;
 
     private Student currStudent;
 
@@ -66,7 +63,10 @@ public class WelcomeScreenActivity extends AppCompatActivity {
         // the firebase. Currently a text view
         
         // Need to format it. 
-        
+
+        nameTV = (TextView) findViewById(R.id.nameWelcome);
+        pointTV= (TextView) findViewById(R.id.pointsEarned);
+        starsTV= (TextView) findViewById(R.id.starsCollected);
 
 
         // Get the current user ID.
@@ -81,6 +81,11 @@ public class WelcomeScreenActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
 
                 currStudent = dataSnapshot.getValue(Student.class);
+
+
+                //TODO
+                // 1. make the welcome text separate and updateable
+                // 2. Do the above for stars collected and Points Earned.
 
                 String text = "Welcome " + currStudent.getFullName().toString();
                 nameTV.setText(text);
@@ -100,15 +105,18 @@ public class WelcomeScreenActivity extends AppCompatActivity {
 
         });
 
-
+        // TODO make subjects a recycler view.
         // On clicking the subject, open the Worksheet Display Activity and send info on current Grade of the student.
         TextView math = (TextView)findViewById(R.id.math);
+
         math.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(currStudent!=null) {
+                    // Open Worksheets Activity
                     Intent intent = new Intent(WelcomeScreenActivity.this, WorksheetsDisplayActivity.class);
                     Bundle b = new Bundle();
+                    // Send Grade information
                     b.putInt("grade", currStudent.getGrade());
                     intent.putExtras(b);
                     startActivity(intent);

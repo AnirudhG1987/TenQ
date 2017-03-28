@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.coachgecko.tenq.Questions.Question;
 import com.coachgecko.tenq.Questions.QuestionHolderActivity;
 import com.coachgecko.tenq.R;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
@@ -24,6 +25,7 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class WorksheetFragment extends Fragment {
 
@@ -33,7 +35,7 @@ public class WorksheetFragment extends Fragment {
 
     private FirebaseRecyclerAdapter<Worksheet, WorksheetHolder> adapter;
 
-    private DatabaseReference mfiredatabaseRef;
+    private DatabaseReference mFiredatabaseRef;
 
     private String currUserID;
 
@@ -55,6 +57,7 @@ public class WorksheetFragment extends Fragment {
             grade = getArguments().getString("grade");
         }
 
+        // get current user ID.
         currUserID = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
 
@@ -70,7 +73,9 @@ public class WorksheetFragment extends Fragment {
         mLinearLayoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(mLinearLayoutManager);
 
-        mfiredatabaseRef = FirebaseDatabase.getInstance().getReference("courses").child("math")
+
+        // TODO make the subject an input
+        mFiredatabaseRef = FirebaseDatabase.getInstance().getReference("courses").child("math")
                 .child(grade).child("topics").child(topicKey).child("worksheets");
 
         setupWorksheets();
@@ -86,14 +91,21 @@ public class WorksheetFragment extends Fragment {
     }
 
     private void setupWorksheets() {
+
+
         mworkSheetList = new ArrayList<>();
-        Query query = mfiredatabaseRef;
+
+        Query query = mFiredatabaseRef;
+
+
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
                  for (DataSnapshot data : dataSnapshot.getChildren()) {
-                    final String key = data.getKey();
+
+                     // This gets the list of worksheet ids under the Topic Name
+                    final String key = data.getValue(String.class);
                     /// THIS IS to get worksheet name and description , think of something better
                     Query query = FirebaseDatabase.getInstance().getReference("worksheets").child(key).child("details");
                     if (query != null) {
@@ -108,7 +120,10 @@ public class WorksheetFragment extends Fragment {
                             // this is to get the score and no of stars
                             Query query = FirebaseDatabase.getInstance()
                                     .getReference("finishedworksheets").child(currUserID)
-                                    .child(key).child("score");
+                                    .child(key);
+
+                            // This now downloads the entire finished worksheet, along with questions and answers
+                            // is there a better way TODO
 
                             if (query != null) {
                                 query.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -117,10 +132,16 @@ public class WorksheetFragment extends Fragment {
 
                                         if (dataSnapshot.getValue() != null) {
 
+                                            long noOfCorrectQuestions = (long)dataSnapshot.child("noOfCorrectQuestions").getValue();
+                                            long noOfQuestions = (long)dataSnapshot.child("noOfQuestions").getValue();
+
+
                                             mworkSheetList.add(Worksheet.builder().key(key)
                                                     .name(name)
                                                     .description(description)
-                                                    .score(dataSnapshot.getValue().toString()).build());
+                                                    .score(noOfCorrectQuestions+"/"+noOfQuestions)
+                                                    .noOfStars((long)dataSnapshot.child("noOfStars").getValue())
+                                                    .build());
 
                                         } else {
 
@@ -130,8 +151,6 @@ public class WorksheetFragment extends Fragment {
 
                                         }
                                         adapter.notifyDataSetChanged();
-
-                                        System.out.println("worksheet added " + mworkSheetList.size());
 
 
                                     }
@@ -164,7 +183,7 @@ public class WorksheetFragment extends Fragment {
 
         adapter = new FirebaseRecyclerAdapter<Worksheet, WorksheetHolder>(
                 Worksheet.class, R.layout.activity_worksheet_item,
-                WorksheetHolder.class, mfiredatabaseRef) {
+                WorksheetHolder.class, mFiredatabaseRef) {
 
             @Override
             public WorksheetHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -238,6 +257,8 @@ public class WorksheetFragment extends Fragment {
 
             Intent intent = new Intent(context, QuestionHolderActivity.class);
             intent.putExtra("worksheetID", mworksheet.getKey());
+            intent.putExtra("pointsEarned",mworksheet.getScore());
+            intent.putExtra("starCollected",mworksheet.getNoOfStars());
             context.startActivity(intent);
         }
     }

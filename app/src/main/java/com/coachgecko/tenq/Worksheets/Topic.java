@@ -1,4 +1,4 @@
-package com.coachgecko.tenq.Topics;
+package com.coachgecko.tenq.Worksheets;
 
 import lombok.Data;
 import lombok.experimental.Builder;

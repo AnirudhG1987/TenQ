@@ -1,4 +1,4 @@
-package com.coachgecko.tenq.Topics;
+package com.coachgecko.tenq.Worksheets;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -22,11 +22,15 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.InjectView;
+
 public class TopicFragment extends Fragment {
 
     ArrayAdapter<String> topicsSpinnerAdapter;
     OnTopicSelectedListener mCallback;
-    private Spinner mTopicsSpinner;
+
+    Spinner mTopicsSpinner;
+
     private DatabaseReference mfiredatabaseRef;
     private List<String> mTopicsList;
     private List<String> mTopicKeyList;
@@ -61,11 +65,12 @@ public class TopicFragment extends Fragment {
 
         View rootview = inflater.inflate(R.layout.fragment_topic, container, false);
 
+
         mTopicsSpinner = (Spinner) rootview.findViewById(R.id.spinnerTopicList);
 
+        String grade;
 
-        String grade = "MA04";
-
+        // Get the grade being passed
         if (getArguments() != null) {
             grade = getArguments().getString("grade");
             System.out.println(grade);
@@ -74,6 +79,7 @@ public class TopicFragment extends Fragment {
             grade = "MA04";
         }
 
+        // TODO make it flexible, should have courses as a parameter
         mfiredatabaseRef = FirebaseDatabase.getInstance().getReference("courses").child("math")
                 .child(grade).child("topics");
 

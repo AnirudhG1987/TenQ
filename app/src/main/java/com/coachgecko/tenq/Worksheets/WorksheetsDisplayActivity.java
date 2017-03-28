@@ -11,7 +11,6 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
 import com.coachgecko.tenq.R;
-import com.coachgecko.tenq.Topics.TopicFragment;
 
 import java.text.DecimalFormat;
 
@@ -30,20 +29,27 @@ public class WorksheetsDisplayActivity extends FragmentActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_topicworksheet);
 
-
+        // This is received from Welcome Screen
+        // Grade
         extras = getIntent().getExtras();
 
 
         if (extras != null) {
             int gradeNo = extras.getInt("grade");
             DecimalFormat formatter = new DecimalFormat("00");
+            //TODO make this subject as an input option
             grade = "MA"+formatter.format(gradeNo);
         }
         else{
+            // Default it to Grade 4
+            // TODO make this give an error
             grade = "MA04";
         }
 
+        // The top Topic Selection section
         setupTopicFragment();
+
+        // Upon Topic Selection, the worksheets available
         setupWorksheetListFragment();
 
     }
@@ -56,6 +62,7 @@ public class WorksheetsDisplayActivity extends FragmentActivity
 
         Fragment fragment = new TopicFragment();
 
+        // send Grade info to load the appropriate topics list
         Bundle b = new Bundle();
         b.putString("grade", grade);
         fragment.setArguments(b);
@@ -79,19 +86,10 @@ public class WorksheetsDisplayActivity extends FragmentActivity
         return fragment;
     }
 
-    @Override
-    public void onTopicSelected(String topicName) {
-        fragmentRefresher();
-        Fragment fragment = setupWorksheetListFragment();
 
-        // send the topicID selected.
-        Bundle b = new Bundle();
-        b.putString("topicKey", topicName);
-        b.putString("grade", grade);
-        fragment.setArguments(b);
-        getSupportFragmentManager().beginTransaction().replace(R.id.worksheet_fragment, fragment).commit();
-    }
 
+
+    // Removes Existing Fragment
     private void fragmentRefresher() {
 
         View view = this.getCurrentFocus();
@@ -108,6 +106,23 @@ public class WorksheetsDisplayActivity extends FragmentActivity
                     remove(f).commit();
         }
 
+    }
+
+
+    // This is triggered from Topics Fragment
+    @Override
+    public void onTopicSelected(String topicName) {
+        fragmentRefresher();
+        Fragment fragment = setupWorksheetListFragment();
+
+        // send the topicID selected and grade
+        Bundle b = new Bundle();
+        b.putString("topicKey", topicName);
+        b.putString("grade", grade);
+
+        // these arguments are sent to Worksheet Fragment.
+        fragment.setArguments(b);
+        getSupportFragmentManager().beginTransaction().replace(R.id.worksheet_fragment, fragment).commit();
     }
 
 }

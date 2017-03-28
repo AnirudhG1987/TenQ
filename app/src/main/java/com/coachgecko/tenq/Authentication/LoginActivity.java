@@ -22,6 +22,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
+import butterknife.InjectView;
+
 public class LoginActivity extends AppCompatActivity {
 
     private EditText inputEmail, inputPassword;
@@ -29,12 +31,19 @@ public class LoginActivity extends AppCompatActivity {
     private ProgressBar progressBar;
     private Button btnSignup, btnLogin, btnReset;
 
+    // TODO
+    // 1. Add Google and Facebook Signin
+    // 2. Design a good Login Page
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         //Get Firebase auth instance
         auth = FirebaseAuth.getInstance();
+
+        // If User is logged in and authenticated --> Moved to Welcome Screen
 
         if (auth.getCurrentUser() != null) {
             startActivity(new Intent(LoginActivity.this, WelcomeScreenActivity.class));
@@ -44,9 +53,6 @@ public class LoginActivity extends AppCompatActivity {
         // set the view now
         setContentView(R.layout.activity_login);
 
-      //  Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        //  setSupportActionBar(toolbar);
-
 
         inputEmail = (EditText) findViewById(R.id.email);
         inputPassword = (EditText) findViewById(R.id.password);
@@ -55,9 +61,12 @@ public class LoginActivity extends AppCompatActivity {
         btnLogin = (Button) findViewById(R.id.btn_login);
         btnReset = (Button) findViewById(R.id.btn_reset_password);
 
+
         //Get Firebase auth instance
         auth = FirebaseAuth.getInstance();
 
+
+        // Pressing Singup Form leads to Singup or Registration Activity
         btnSignup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -65,6 +74,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
+        // Password Reset
         btnReset.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -72,6 +82,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
+        // Login button when pressed gets email and password, user is authenticated, when done goes to Welcome Screen
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

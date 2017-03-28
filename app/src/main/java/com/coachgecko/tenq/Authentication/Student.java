@@ -11,7 +11,7 @@ public class Student {
 
 
     private String fullName;
-    private int age;
+    private String dob;
     private int grade;
     private String country;
     private String email;
@@ -22,8 +22,8 @@ public class Student {
     public Student(){}
 
     @Builder
-    public Student(String fullName, int age, String country, String email, String password,int grade, int starsCollected, int pointsEarned){
-        this.age = age;
+    public Student(String fullName, String dob, String country, String email, String password,int grade, int starsCollected, int pointsEarned){
+        this.dob = dob;
         this.fullName = fullName;
         this.country = country;
         this.email = email;
